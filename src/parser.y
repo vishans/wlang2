@@ -168,8 +168,8 @@ rep_detail:
             std::stoi($2), // Rep number
             std::string($4), // Weight
             *new std::map<std::string, std::string>(), // Empty custom fields
-            *new std::map<std::string, std::string>(), // Empty types
-            *new std::map<std::string, std::string>()  // Empty aliases
+            *new std::map<std::string, std::string>() // Since custom fields are empty no need for alias
+
         );
     }
     | REP INTEGER_LITERAL WEIGHT STRING custom_fields {
@@ -179,8 +179,7 @@ rep_detail:
             std::stoi($2), // Rep number
             std::string($4), // Weight
             combinedFields, // Custom fields
-            *new std::map<std::string, std::string>(), // Empty types
-            *new std::map<std::string, std::string>()  // Empty aliases
+           aliasToNameMap
         );
     }
     ;
@@ -193,8 +192,9 @@ rep_range:
                 i, // Rep number in the range
                 std::string($6), // Weight
                 *new std::map<std::string, std::string>(), // Empty custom fields
-                *new std::map<std::string, std::string>(), // Empty types
-                *new std::map<std::string, std::string>()  // Empty aliases
+                *new std::map<std::string, std::string>() // No need for alias
+
+                
             ));
         }
     }
@@ -207,8 +207,7 @@ rep_range:
                 i, // Rep number in the range
                 std::string($6), // Weight
                 combinedFields, // Custom fields
-                *new std::map<std::string, std::string>(), // Empty types
-                *new std::map<std::string, std::string>()  // Empty aliases
+                aliasToNameMap
             ));
         }
     }

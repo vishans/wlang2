@@ -4,13 +4,20 @@
 using namespace std;
 
 // Implementation of RepDetail class
-RepDetail::RepDetail(int rn, string w, const map<string, string>& fields, const map<string, string>& types, const map<string, string>& aliases)
+RepDetail::RepDetail(int rn, string w, const map<string, string>& fields, const map<string, string>& aliasToNameMap)
     : repNumber(rn), weight(w) {
     // Populate customFields with the relevant fields and values
-    for (const auto& [alias, field] : aliases) {
-        if (fields.find(field) != fields.end()) {
-            customFields[alias] = fields.at(field);
+    string actualField;
+    for (const auto& [field, value] : fields) {
+        actualField = field;
+
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
         }
+        
+        customFields[actualField] = fields.at(field);
+        
     }
 }
 

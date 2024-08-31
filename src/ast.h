@@ -23,8 +23,8 @@ public:
      * @param types The types of the custom fields
      * @param aliases The aliases used for custom fields
      */
-    RepDetail(int rn, std::string w, const std::map<std::string, std::string>& fields,
-              const std::map<std::string, std::string>& types, const std::map<std::string, std::string>& aliases);
+    RepDetail(int rn, std::string w, const std::map<std::string, 
+    std::string>& fields, const std::map<std::string, std::string>& aliasToNameMap);
 };
 
 /**
