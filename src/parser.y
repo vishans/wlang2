@@ -5,6 +5,7 @@
 #include <string>
 #include "ast.h"
 #include "parser.tab.hpp"
+#include "globals.h"
 
 // Declare external lexer function and necessary variables
 extern int yylex();
@@ -12,6 +13,13 @@ extern int line_number;
 void yyerror(const char *s);
 
 Workout *parsedWorkout = nullptr; // To store the final parsed workout
+
+std::map<std::string, std::string> aliasToNameMap;
+std::map<std::string, std::string> nameToTypeMap;
+std::map<std::string, std::string> nameToDefaultMap;
+
+
+
 %}
 
 %union {
@@ -71,10 +79,13 @@ field_declarations:
 
 field_def:
     FIELD IDENTIFIER TYPE field_type DEFAULT field_value AS IDENTIFIER { 
-        // Store field definition
+        aliasToNameMap[$8] = $2;
+        nameToTypeMap[$2] = *$4;
+        nameToDefaultMap[$2] = *$6;
     }
     | FIELD IDENTIFIER TYPE field_type DEFAULT field_value { 
-        // Store field definition
+        nameToDefaultMap[$2] = *$6;
+        nameToTypeMap[$2] = *$4;
     }
     ;
 
