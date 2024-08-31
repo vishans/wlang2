@@ -1,10 +1,11 @@
 %{
-#include "parser.tab.h"
+#include "ast.h"
+#include "parser.tab.hpp"
 #include <string>
 #include <iostream>
 
 // Externally defined in parser.tab.h
-extern int yylval;
+//extern int yylval;
 
 // To keep track of line numbers for better error messages
 int line_number = 1;
@@ -46,6 +47,6 @@ int line_number = 1;
 %%
 
 // Function to handle errors
-int yywrap() {
-    return 1;
-}
+//int yywrap() {
+//   return 1;
+//}
