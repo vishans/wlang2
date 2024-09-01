@@ -1,14 +1,17 @@
 #include <iostream>
 #include "ast.h"
+#include "globals.h" // To be able to access nameToTypeMap for type checking
+
 
 using namespace std;
 
 // Implementation of RepDetail class
-RepDetail::RepDetail(int rn, string w, const map<string, string>& fields, const map<string, string>& aliasToNameMap)
+RepDetail::RepDetail(int rn, string w, const map<string, pair<string, string> >& fields, const map<string, string>& aliasToNameMap)
     : repNumber(rn), weight(w) {
     // Populate customFields with the relevant fields and values
     string actualField;
-    for (const auto& [field, value] : fields) {
+    for (const auto& [field, valueType] : fields) {
+        const auto& [value, type] = valueType;
         actualField = field;
 
         // Field could be an alias
@@ -89,7 +92,7 @@ void Workout::printWorkout() const {
 
                 // Print custom fields for each rep
                 for (const auto& field : repDetail->customFields) {
-                    cout << ", " << field.first << ": " << field.second;
+                    cout << ", " << field.first << ": " << field.second.first << "," << field.second.second;
                 }
                 cout << endl;
             }

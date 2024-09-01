@@ -32,10 +32,11 @@ std::map<std::string, std::string> nameToDefaultMap;
     RepDetail *repDetail;
     std::vector<SetDetail*> *setDetails;
     std::vector<RepDetail*> *repDetails;
-    std::map<std::string, std::string> *customFields;
+    std::map<std::string, std::pair<std::string, std::string> > *customFields;
     std::string *type;  // Type for field_type
     std::string *value; // Type for field_value
-    std::map<std::string, std::string> *fieldValuePair; // Type for field_value_pair
+    std::map<std::string, std::pair<std::string, std::string> > *fieldValuePair; // Type for field value pair with type
+                                                        // field (string) -> value, type (both strings)
 }
 
 // Token declarations
@@ -167,13 +168,13 @@ rep_detail:
         $$ = new RepDetail(
             std::stoi($2), // Rep number
             std::string($4), // Weight
-            *new std::map<std::string, std::string>(), // Empty custom fields
+            *new std::map<std::string, std::pair<std::string, std::string> >(), // Empty custom fields
             *new std::map<std::string, std::string>() // Since custom fields are empty no need for alias
 
         );
     }
     | REP INTEGER_LITERAL WEIGHT STRING custom_fields {
-        std::map<std::string, std::string> combinedFields;
+        std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($5->begin(), $5->end());
         $$ = new RepDetail(
             std::stoi($2), // Rep number
@@ -191,7 +192,7 @@ rep_range:
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 std::string($6), // Weight
-                *new std::map<std::string, std::string>(), // Empty custom fields
+                *new std::map<std::string, std::pair<std::string,std::string> >(), // Empty custom fields
                 *new std::map<std::string, std::string>() // No need for alias
 
                 
@@ -200,7 +201,7 @@ rep_range:
     }
     | REPS INTEGER_LITERAL '-' INTEGER_LITERAL WEIGHT STRING custom_fields {
         $$ = new std::vector<RepDetail*>();
-        std::map<std::string, std::string> combinedFields;
+        std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($7->begin(), $7->end());
         for (int i = std::stoi($2); i <= std::stoi($4); ++i) {
             $$->push_back(new RepDetail(
@@ -215,33 +216,40 @@ rep_range:
 
 custom_fields:
     custom_fields field_value_pair { $$ = $1; $1->insert($2->begin(), $2->end()); }
-    | field_value_pair { $$ = new std::map<std::string, std::string>(); $$->insert($1->begin(), $1->end()); }
+    | field_value_pair { $$ = new std::map<std::string, std::pair<std::string, std::string> >(); $$->insert($1->begin(), $1->end()); }
     ;
 
 field_value_pair:
     IDENTIFIER STRING { 
-        std::map<std::string, std::string> *m = new std::map<std::string, std::string>();
-        m->insert(std::make_pair($1, $2));
+        std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
+        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("string"))));
         $$ = m;
     }
     | IDENTIFIER INTEGER_LITERAL { 
-        std::map<std::string, std::string> *m = new std::map<std::string, std::string>();
-        m->insert(std::make_pair($1, $2));
+        std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
+        
+        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("integer"))));
+
         $$ = m;
     }
     | IDENTIFIER FLOAT_LITERAL { 
-        std::map<std::string, std::string> *m = new std::map<std::string, std::string>();
-        m->insert(std::make_pair($1, $2));
+        std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
+
+        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("float"))));
+
         $$ = m;
     }
     | IDENTIFIER BOOLEAN_LITERAL { 
-        std::map<std::string, std::string> *m = new std::map<std::string, std::string>();
-        m->insert(std::make_pair($1, $2));
+        std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
+
+        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("boolean"))));
+
         $$ = m;
     }
     | IDENTIFIER TIME_LITERAL { 
-        std::map<std::string, std::string> *m = new std::map<std::string, std::string>();
-        m->insert(std::make_pair($1, $2));
+        std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
+
+        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("time"))));
         $$ = m;
     }
     ;
