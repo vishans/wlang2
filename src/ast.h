@@ -11,19 +11,17 @@
 class RepDetail {
 public:
     int repNumber;                             // The repetition number (e.g., 1, 2, 3)
-    std::string weight;                        // The weight used for this rep
     std::map<std::string, std::pair<std::string, std::string> > customFields; // Custom fields associated with this rep
 
     /**
      * Constructor for RepDetail
      * 
      * @param rn The repetition number
-     * @param w The weight used for this repetition
      * @param fields The custom fields and their values for this rep
      * @param types The types of the custom fields
      * @param aliases The aliases used for custom fields
      */
-    RepDetail(int rn, std::string w, const std::map<std::string, 
+    RepDetail(int rn, const std::map<std::string, 
     std::pair<std::string, std::string> >& fields, const std::map<std::string, std::string>& aliasToNameMap);
 };
 

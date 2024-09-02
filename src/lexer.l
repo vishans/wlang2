@@ -19,7 +19,6 @@ int line_number = 1;
 "exercise"          { return EXERCISE; }
 "sets"              { return SETS; }
 "reps"              { return REPS; }
-"weight"            { return WEIGHT; }
 "set"               { return SET; }
 "rep"               { return REP; }
 "rest"              { return REST; }

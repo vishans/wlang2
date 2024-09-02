@@ -6,8 +6,8 @@
 using namespace std;
 
 // Implementation of RepDetail class
-RepDetail::RepDetail(int rn, string w, const map<string, pair<string, string> >& fields, const map<string, string>& aliasToNameMap)
-    : repNumber(rn), weight(w) {
+RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, const map<string, string>& aliasToNameMap)
+    : repNumber(rn) {
     // Populate customFields with the relevant fields and values
     string actualField;
     for (const auto& [field, valueType] : fields) {
@@ -87,8 +87,7 @@ void Workout::printWorkout() const {
         for (SetDetail* setDetail : exercise->setDetails) {
             cout << "  Set " << setDetail->setNumber << ":" << endl;
             for (RepDetail* repDetail : setDetail->repDetails) {
-                cout << "    Rep " << repDetail->repNumber
-                     << ": Weight " << repDetail->weight;
+                cout << "    Rep " << repDetail->repNumber;
 
                 // Print custom fields for each rep
                 for (const auto& field : repDetail->customFields) {

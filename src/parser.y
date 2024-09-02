@@ -46,7 +46,7 @@ std::map<std::string, std::string> nameToDefaultMap;
 %token <str> FLOAT_LITERAL
 %token <str> BOOLEAN_LITERAL
 %token <str> TIME_LITERAL
-%token WORKOUT EXERCISE SETS REPS WEIGHT SET REP REST FIELD DEFAULT TYPE AS
+%token WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS
 %token STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE
 
 %type <exercise> exercise
@@ -162,21 +162,19 @@ rep_details:
     ;
 
 rep_detail:
-    REP INTEGER_LITERAL WEIGHT STRING {
+    REP INTEGER_LITERAL {
         $$ = new RepDetail(
             std::stoi($2), // Rep number
-            std::string($4), // Weight
             *new std::map<std::string, std::pair<std::string, std::string> >(), // Empty custom fields
             *new std::map<std::string, std::string>() // Since custom fields are empty no need for alias
 
         );
     }
-    | REP INTEGER_LITERAL WEIGHT STRING custom_fields {
+    | REP INTEGER_LITERAL custom_fields {
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
-        combinedFields.insert($5->begin(), $5->end());
+        combinedFields.insert($3->begin(), $3->end());
         $$ = new RepDetail(
             std::stoi($2), // Rep number
-            std::string($4), // Weight
             combinedFields, // Custom fields
            aliasToNameMap
         );
@@ -184,12 +182,11 @@ rep_detail:
     ;
 
 rep_range:
-    REPS INTEGER_LITERAL '-' INTEGER_LITERAL WEIGHT STRING {
+    REPS INTEGER_LITERAL '-' INTEGER_LITERAL {
         $$ = new std::vector<RepDetail*>();
         for (int i = std::stoi($2); i <= std::stoi($4); ++i) {
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
-                std::string($6), // Weight
                 *new std::map<std::string, std::pair<std::string,std::string> >(), // Empty custom fields
                 *new std::map<std::string, std::string>() // No need for alias
 
@@ -197,14 +194,13 @@ rep_range:
             ));
         }
     }
-    | REPS INTEGER_LITERAL '-' INTEGER_LITERAL WEIGHT STRING custom_fields {
+    | REPS INTEGER_LITERAL '-' INTEGER_LITERAL custom_fields {
         $$ = new std::vector<RepDetail*>();
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
-        combinedFields.insert($7->begin(), $7->end());
+        combinedFields.insert($5->begin(), $5->end());
         for (int i = std::stoi($2); i <= std::stoi($4); ++i) {
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
-                std::string($6), // Weight
                 combinedFields, // Custom fields
                 aliasToNameMap
             ));
