@@ -116,24 +116,22 @@ exercise_list:
     ;
 
 exercise:
-    EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL WEIGHT STRING '{' set_details '}' { 
+    EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL '{' set_details '}' { 
         $$ = new Exercise(
             std::string($2),                // Convert name to std::string
             std::stoi($4),                  // Convert sets to int
             std::stoi($6),                  // Convert reps to int
-            std::string($8),                // Convert weight to std::string
-            *$10                             // setDetails
+            *$8                             // setDetails
         ); 
     }
-    | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL WEIGHT STRING { 
+    | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL { 
         $$ = new Exercise(
             std::string($2),                // Convert name to std::string
             std::stoi($4),                  // Convert sets to int
-            std::stoi($6),                  // Convert reps to int
-            std::string($8)                 // Convert weight to std::string
+            std::stoi($6)               // Convert reps to int
         ); 
     }
-    | REST { $$ = new Exercise("REST", -1, -1, "-1"); }
+    | REST { $$ = new Exercise("REST", -1, -1); }
     ;
 
 set_details:
@@ -264,6 +262,6 @@ field_value_pair:
 void yyerror(const char *s) {
     extern int yylineno; // Defined and maintained by Bison to track line numbers
     extern char *yytext; // The text of the current token
-    std::cerr << "Syntax error at line " << yylineno << ": " << s << std::endl;
+    std::cerr << "Syntax error at line " << line_number << ": " << s << std::endl;
     std::cerr << "Unexpected token: '" << yytext << "'" << std::endl;
 }

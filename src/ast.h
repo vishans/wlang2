@@ -67,11 +67,10 @@ public:
      * @param n Name of the exercise
      * @param s Number of sets
      * @param r Number of reps per set
-     * @param w Weight used for the exercise
      * @param sd A vector of SetDetail pointers representing sets
      * @param cf Custom fields associated with the exercise
      */
-    Exercise(std::string n, int s, int r, std::string w, 
+    Exercise(std::string n, int s, int r,
              std::vector<SetDetail*> sd = std::vector<SetDetail*>(), 
              std::map<std::string, std::string> cf = std::map<std::string, std::string>());
 

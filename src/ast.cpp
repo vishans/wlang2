@@ -37,8 +37,8 @@ SetDetail::~SetDetail() {
 }
 
 // Implementation of Exercise class
-Exercise::Exercise(string n, int s, int r, string w, vector<SetDetail*> sd, map<string, string> cf)
-    : name(n), sets(s), reps(r), weight(w), setDetails(sd), customFields(cf) {
+Exercise::Exercise(string n, int s, int r, vector<SetDetail*> sd, map<string, string> cf)
+    : name(n), sets(s), reps(r), setDetails(sd), customFields(cf) {
 }
 
 // Destructor to clean up dynamically allocated SetDetail objects
