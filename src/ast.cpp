@@ -21,12 +21,26 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, c
         if(aliasToNameMap.find(field) != aliasToNameMap.end()){
             actualField = aliasToNameMap.at(field);
         }else{
+            // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
                 printErrorMessage(line_number, "Undefine Field", errorMessage);
-                
+
                 exit(EXIT_FAILURE);
             }
+        }
+
+        // Type check
+        if(type != nameToTypeMap.at(actualField)){
+            // Type error
+
+            std::string errorMessage = "The field '" + field + "' has the wrong type."
+            + "\n"
+            + " Expected " + nameToTypeMap.at(actualField) + " but got " + type + "."
+            ;
+            printErrorMessage(line_number-1, "Wrong Type", errorMessage);
+
+            exit(EXIT_FAILURE);
         }
         
         customFields[actualField] = fields.at(field);
