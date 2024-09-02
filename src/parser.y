@@ -1,3 +1,6 @@
+%error-verbose
+%locations
+
 %{
 #include <iostream>
 #include <vector>
@@ -6,6 +9,8 @@
 #include "ast.h"
 #include "parser.tab.hpp"
 #include "globals.h"
+#include "error.h"
+#include <cstdlib>
 
 // Declare external lexer function and necessary variables
 extern int yylex();
@@ -18,6 +23,8 @@ std::map<std::string, std::string> aliasToNameMap;
 std::map<std::string, std::string> nameToTypeMap;
 std::map<std::string, std::string> nameToDefaultMap;
 
+extern int yylineno;
+extern char *yytext;
 
 
 %}
@@ -34,7 +41,7 @@ std::map<std::string, std::string> nameToDefaultMap;
     std::vector<RepDetail*> *repDetails;
     std::map<std::string, std::pair<std::string, std::string> > *customFields;
     std::string *type;  // Type for field_type
-    std::string *value; // Type for field_value
+    std::pair<std::string, std::string> *value; // Type for field_value + type
     std::map<std::string, std::pair<std::string, std::string> > *fieldValuePair; // Type for field value pair with type
                                                         // field (string) -> value, type (both strings)
 }
@@ -82,11 +89,32 @@ field_def:
     FIELD IDENTIFIER TYPE field_type DEFAULT field_value AS IDENTIFIER { 
         aliasToNameMap[$8] = $2;
         nameToTypeMap[$2] = *$4;
-        nameToDefaultMap[$2] = *$6;
+        if(*$4 != $6->second){
+            std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
+            "\n" + 
+            " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
+
+            printErrorMessage(line_number, "Type Mismatch", message);
+            exit(EXIT_FAILURE);
+
+        }
+        nameToDefaultMap[$2] = $6->first;
     }
     | FIELD IDENTIFIER TYPE field_type DEFAULT field_value { 
-        nameToDefaultMap[$2] = *$6;
         nameToTypeMap[$2] = *$4;
+
+        if(*$4 != $6->second){
+            std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
+            "\n" + 
+            " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
+
+
+            printErrorMessage(line_number, "Type Mismatch", message);
+            exit(EXIT_FAILURE);
+
+        }
+
+        nameToDefaultMap[$2] = $6->first;
     }
     ;
 
@@ -99,11 +127,11 @@ field_type:
     ;
 
 field_value:
-    STRING { $$ = new std::string($1); }
-    | INTEGER_LITERAL { $$ = new std::string($1); }
-    | FLOAT_LITERAL { $$ = new std::string($1); }
-    | BOOLEAN_LITERAL { $$ = new std::string($1); }
-    | TIME_LITERAL { $$ = new std::string($1); }
+    STRING { $$ = new std::pair<std::string, std::string>(*new std::string($1), "string"); }
+    | INTEGER_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "integer"); }
+    | FLOAT_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "float"); }
+    | BOOLEAN_LITERAL{ $$ = new std::pair<std::string, std::string>(*new std::string($1), "boolean"); }
+    | TIME_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "time"); }
     ;
 
 workout:
