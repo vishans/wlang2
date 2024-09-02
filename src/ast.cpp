@@ -2,6 +2,7 @@
 #include "ast.h"
 #include "globals.h" // To be able to access nameToTypeMap for type checking
 #include <cstdlib> // For exit()
+#include "error.h"
 
 
 using namespace std;
@@ -21,10 +22,9 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, c
             actualField = aliasToNameMap.at(field);
         }else{
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
-                // Field does not exist i.e has not been defined
-                std::string errorMessage = "Line " + std::to_string(line_number) +": " + "Error: Undefined field '" + field + "'. This field has not been defined.";
-
-                std::cout << errorMessage << std::endl;
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+                printErrorMessage(line_number, "Undefine Field", errorMessage);
+                
                 exit(EXIT_FAILURE);
             }
         }

@@ -6,4 +6,5 @@ all:
 	g++ -c -o obj/lexer.o src/lexer.cpp
 	g++ -c -o obj/ast.o src/ast.cpp
 	g++ -c -o obj/main.o src/main.cpp
-	g++ -o w obj/parser.tab.o obj/lexer.o obj/ast.o obj/main.o
+	g++ -c -o obj/error.o src/error.cpp
+	g++ -o w obj/parser.tab.o obj/lexer.o obj/ast.o obj/main.o obj/error.o
