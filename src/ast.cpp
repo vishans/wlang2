@@ -3,13 +3,14 @@
 #include "globals.h" // To be able to access nameToTypeMap for type checking
 #include <cstdlib> // For exit()
 #include "error.h"
+#include "helper.h"
 
 
 using namespace std;
 extern int line_number;
 
 // Implementation of RepDetail class
-RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, const map<string, string>& aliasToNameMap)
+RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, const map<string, string>& aliasToNameMap, std::string lineId)
     : repNumber(rn) {
     // Populate customFields with the relevant fields and values
     string actualField;
@@ -24,7 +25,8 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, c
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-                printErrorMessage(line_number, "Undefine Field", errorMessage);
+                int correctLineNo = getActualLineNumber(line_number, lineId);
+                printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
 
                 exit(EXIT_FAILURE);
             }
@@ -36,9 +38,11 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, c
 
             std::string errorMessage = "The field '" + field + "' has the wrong type."
             + "\n"
-            + " Expected " + nameToTypeMap.at(actualField) + " but got " + type + "."
+            + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
             ;
-            printErrorMessage(line_number-1, "Wrong Type", errorMessage);
+           
+            int correctLineNo = getActualLineNumber(line_number, lineId);
+            printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
 
             exit(EXIT_FAILURE);
         }

@@ -22,7 +22,8 @@ public:
      * @param aliases The aliases used for custom fields
      */
     RepDetail(int rn, const std::map<std::string, 
-    std::pair<std::string, std::string> >& fields, const std::map<std::string, std::string>& aliasToNameMap);
+    std::pair<std::string, std::string> >& fields, const std::map<std::string, std::string>& aliasToNameMap,
+    std::string lineId);
 };
 
 /**

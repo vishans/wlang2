@@ -11,6 +11,7 @@
 #include "globals.h"
 #include "error.h"
 #include <cstdlib>
+#include "helper.h"
 
 // Declare external lexer function and necessary variables
 extern int yylex();
@@ -94,7 +95,8 @@ field_def:
             "\n" + 
             " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
-            printErrorMessage(line_number, "Type Mismatch", message);
+            int correctLineNo = getActualLineNumber(line_number, $6->first);
+            printErrorMessage(correctLineNo, "Type Mismatch", message);
             exit(EXIT_FAILURE);
 
         }
@@ -108,8 +110,8 @@ field_def:
             "\n" + 
             " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
-
-            printErrorMessage(line_number, "Type Mismatch", message);
+            int correctLineNo = getActualLineNumber(line_number, $6->first);
+            printErrorMessage(correctLineNo, "Type Mismatch", message);
             exit(EXIT_FAILURE);
 
         }
@@ -194,8 +196,8 @@ rep_detail:
         $$ = new RepDetail(
             std::stoi($2), // Rep number
             *new std::map<std::string, std::pair<std::string, std::string> >(), // Empty custom fields
-            *new std::map<std::string, std::string>() // Since custom fields are empty no need for alias
-
+            *new std::map<std::string, std::string>(), // Since custom fields are empty no need for alias
+            "rep" + std::string($2)
         );
     }
     | REP INTEGER_LITERAL custom_fields {
@@ -204,7 +206,8 @@ rep_detail:
         $$ = new RepDetail(
             std::stoi($2), // Rep number
             combinedFields, // Custom fields
-           aliasToNameMap
+           aliasToNameMap,
+           "rep" + std::string($2)
         );
     }
     ;
@@ -216,8 +219,8 @@ rep_range:
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 *new std::map<std::string, std::pair<std::string,std::string> >(), // Empty custom fields
-                *new std::map<std::string, std::string>() // No need for alias
-
+                *new std::map<std::string, std::string>(), // No need for alias
+                "reps" + std::string($2) + "-" + std::string($4)
                 
             ));
         }
@@ -230,7 +233,9 @@ rep_range:
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 combinedFields, // Custom fields
-                aliasToNameMap
+                aliasToNameMap,
+                "reps" + std::string($2) + "-" + std::string($4)
+
             ));
         }
     }
