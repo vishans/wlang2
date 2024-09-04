@@ -7,4 +7,9 @@ all:
 	g++ -c -o obj/ast.o src/ast.cpp
 	g++ -c -o obj/main.o src/main.cpp
 	g++ -c -o obj/error.o src/error.cpp
-	g++ -o w obj/parser.tab.o obj/lexer.o obj/ast.o obj/main.o obj/error.o
+	g++ -c -o obj/helper.o src/helper.cpp
+
+	g++ -o w obj/parser.tab.o obj/lexer.o obj/ast.o obj/main.o obj/error.o obj/helper.o
+
+run: all
+	./w workout.txt
