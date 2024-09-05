@@ -65,8 +65,13 @@ SetDetail::~SetDetail() {
 }
 
 // Implementation of Exercise class
-Exercise::Exercise(string n, int s, int r, vector<SetDetail*> sd, map<string, string> cf)
-    : name(n), sets(s), reps(r), setDetails(sd), customFields(cf) {
+Exercise::Exercise(string n, int s, int r, 
+vector<SetDetail*> sd,
+const map<string, pair<string, string> >& fields, 
+const map<string, string>& aliasToNameMap, 
+std::string lineId)
+
+    : name(n), sets(s), reps(r), setDetails(sd) {
 }
 
 // Destructor to clean up dynamically allocated SetDetail objects
@@ -108,7 +113,7 @@ void Workout::printWorkout() const {
 
         // Print custom fields for the exercise
         for (const auto& field : exercise->customFields) {
-            cout << "    " << field.first << ": " << field.second << endl;
+            cout << "    " << field.first << ": " << field.second.first << endl;
         }
 
         // Print details of each set

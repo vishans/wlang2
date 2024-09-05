@@ -58,7 +58,7 @@ public:
     int reps;                                    // Number of repetitions per set
     std::string weight;                          // The weight used for the exercise
     std::vector<SetDetail*> setDetails;          // A vector of SetDetail objects representing sets
-    std::map<std::string, std::string> customFields; // Custom fields associated with the exercise
+    std::map<std::string, std::pair<std::string, std::string> > customFields; // Custom fields associated with the exercise
 
     /**
      * Constructor for Exercise
@@ -67,11 +67,12 @@ public:
      * @param s Number of sets
      * @param r Number of reps per set
      * @param sd A vector of SetDetail pointers representing sets
-     * @param cf Custom fields associated with the exercise
      */
     Exercise(std::string n, int s, int r,
-             std::vector<SetDetail*> sd = std::vector<SetDetail*>(), 
-             std::map<std::string, std::string> cf = std::map<std::string, std::string>());
+             std::vector<SetDetail*> sd, 
+             const std::map<std::string, std::pair<std::string, std::string> >& fields, 
+             const std::map<std::string, std::string>& aliasToNameMap, 
+             std::string lineId);
 
     /**
      * Destructor for Exercise
