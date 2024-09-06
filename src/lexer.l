@@ -37,7 +37,7 @@ int line_number = 1;
 \"[^\"]*\"          { yylval.str = strdup(yytext); return STRING; }
 [0-9]+\.[0-9]+      { yylval.str = strdup(yytext); return FLOAT_LITERAL; }
 [0-9]+              { yylval.str = strdup(yytext); return INTEGER_LITERAL; }
-([0-9]+[hms]?|([0-9]+h[0-9]+m?|[0-9]+m[0-9]+s?|[0-9]+s)) { yylval.str = strdup(yytext); return TIME_LITERAL; }
+([0-9]+h)?([0-9]+m)?([0-9]+s)?  { yylval.str = strdup(yytext); return TIME_LITERAL; }
 "{"                 { return '{'; }
 "}"                 { return '}'; }
 "-"                 { return '-'; }
