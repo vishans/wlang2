@@ -158,6 +158,19 @@ exercise:
 
         ); 
     }
+    |
+    EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL '{' set_details '}' { 
+        $$ = new Exercise(
+            std::string($2),                // Convert name to std::string
+            std::stoi($4),                  // Convert sets to int
+            std::stoi($6),                  // Convert reps to int
+            *$8,                             // setDetails
+            *new std::map<std::string, std::pair<std::string, std::string> >(),                             // fields
+            aliasToNameMap,
+            "sets" + *new std::string($4)
+
+        ); 
+    }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL custom_fields { 
         $$ = new Exercise(
             std::string($2),                // Convert name to std::string
@@ -165,6 +178,17 @@ exercise:
             std::stoi($6),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *$7,                         // fields
+            aliasToNameMap,
+            "sets"+ *new std::string($4)
+        ); 
+    }
+    | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL { 
+        $$ = new Exercise(
+            std::string($2),                // Convert name to std::string
+            std::stoi($4),                  // Convert sets to int
+            std::stoi($6),               // Convert reps to int
+            *new std::vector<SetDetail*>(),
+            *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
             aliasToNameMap,
             "sets"+ *new std::string($4)
         ); 
