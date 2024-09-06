@@ -12,6 +12,8 @@
 #include "error.h"
 #include <cstdlib>
 #include "helper.h"
+#include "time.h"
+#include "timeError.h"
 
 // Declare external lexer function and necessary variables
 extern int yylex();
@@ -133,7 +135,12 @@ field_value:
     | INTEGER_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "integer"); }
     | FLOAT_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "float"); }
     | BOOLEAN_LITERAL{ $$ = new std::pair<std::string, std::string>(*new std::string($1), "boolean"); }
-    | TIME_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "time"); }
+    | TIME_LITERAL { 
+        Time time = *new Time(std::string($1));
+        std::string timeString = std::to_string(time.convertIntoSeconds());
+
+        $$ = new std::pair<std::string, std::string>(timeString, "time"); 
+        }
     ;
 
 workout:
@@ -313,7 +320,10 @@ field_value_pair:
     | IDENTIFIER TIME_LITERAL { 
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
 
-        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("time"))));
+        Time time = *new Time(*new std::string($2));
+        std::string timeString = std::to_string(time.convertIntoSeconds());
+
+        m->insert(std::make_pair($1, std::make_pair(timeString,*new std::string("time"))));
         $$ = m;
     }
     ;
