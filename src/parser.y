@@ -136,9 +136,35 @@ field_value:
     | FLOAT_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "float"); }
     | BOOLEAN_LITERAL{ $$ = new std::pair<std::string, std::string>(*new std::string($1), "boolean"); }
     | TIME_LITERAL { 
-        Time time = *new Time(std::string($1));
-        std::string timeString = std::to_string(time.convertIntoSeconds());
+        //Time time = *new Time(std::string($1));
+        //std::string timeString = std::to_string(time.convertIntoSeconds());
 
+
+     Time time;
+
+     try {
+            time = *new Time(*new std::string($1));
+     }
+     catch (const InvalidHour& e){
+        int correctLineNo = getActualLineNumber(line_number, std::string($1));
+        printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+        exit(EXIT_FAILURE);
+
+     }
+     catch (const InvalidMinute& e){
+        int correctLineNo = getActualLineNumber(line_number, std::string($1));
+        printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+        exit(EXIT_FAILURE);
+
+     }
+     catch (const InvalidSecond& e){
+        int correctLineNo = getActualLineNumber(line_number, std::string($1));
+        printErrorMessage(correctLineNo, "Invalid Second", e.what());
+        exit(EXIT_FAILURE);
+
+     }
+
+        std::string timeString = std::to_string(time.convertIntoSeconds());
         $$ = new std::pair<std::string, std::string>(timeString, "time"); 
         }
     ;
@@ -322,7 +348,30 @@ field_value_pair:
     | IDENTIFIER TIME_LITERAL { 
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
 
-        Time time = *new Time(*new std::string($2));
+     Time time;
+
+     try {
+            time = *new Time(*new std::string($2));
+     }
+     catch (const InvalidHour& e){
+        int correctLineNo = getActualLineNumber(line_number, std::string($2));
+        printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+        exit(EXIT_FAILURE);
+
+     }
+     catch (const InvalidMinute& e){
+        int correctLineNo = getActualLineNumber(line_number, std::string($2));
+        printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+        exit(EXIT_FAILURE);
+
+     }
+     catch (const InvalidSecond& e){
+        int correctLineNo = getActualLineNumber(line_number, std::string($2));
+        printErrorMessage(correctLineNo, "Invalid Second", e.what());
+        exit(EXIT_FAILURE);
+
+     }
+
         std::string timeString = std::to_string(time.convertIntoSeconds());
 
         m->insert(std::make_pair($1, std::make_pair(timeString,*new std::string("time"))));
