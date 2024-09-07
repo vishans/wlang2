@@ -28,6 +28,10 @@ Time::Time(std::string time){
           
 }
 
+Time::Time(){
+    
+}
+
 void Time::hour(std::string &time, size_t &hourIndex){
     std::string hourString = time.substr(0, hourIndex+1);
     h = std::stoi(hourString);

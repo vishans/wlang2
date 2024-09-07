@@ -11,6 +11,7 @@ protected:
 
 public:
     Time(std::string time);
+    Time();
     long convertIntoSeconds();
     void print();
 
