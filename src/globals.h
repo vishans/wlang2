@@ -8,4 +8,6 @@ extern std::map<std::string, std::string> aliasToNameMap;
 extern std::map<std::string, std::string> nameToTypeMap;
 extern std::map<std::string, std::string> nameToDefaultMap;
 
+void initializeMaps();
+
 #endif

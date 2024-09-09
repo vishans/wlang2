@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    initializeMaps();
     // Parse the input
     if (yyparse() == 0) {
         // If parsing succeeds, print the parsed workout details
