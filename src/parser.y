@@ -289,24 +289,24 @@ set_detail:
         
         }
         catch (const InvalidHour& e){
-            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
             printErrorMessage(correctLineNo, "Invalid Hour", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
             printErrorMessage(correctLineNo, "Invalid Minute", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
             printErrorMessage(correctLineNo, "Invalid Second", e.what());
             exit(EXIT_FAILURE);
 
         }
-        
+
         fields.insert({"REST", std::make_pair<std::string, std::string>(std::to_string(time.convertIntoSeconds()), "time")});
 
         tempRD.push_back(new RepDetail(-1, fields, 
@@ -349,6 +349,44 @@ rep_detail:
         combinedFields.insert($3->begin(), $3->end());
         $$ = new RepDetail(
             std::stoi($2), // Rep number
+            combinedFields, // Custom fields
+           aliasToNameMap,
+           "rep" + std::string($2)
+        );
+    }
+    | REST TIME_LITERAL {
+
+        Time time;
+
+        try{
+            time = *new Time(*new std::string($2));
+        
+        }
+        catch (const InvalidHour& e){
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+        catch (const InvalidMinute& e){
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+        catch (const InvalidSecond& e){
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+
+        std::string timeString = std::to_string(time.convertIntoSeconds());
+
+        std::map<std::string, std::pair<std::string, std::string> > combinedFields;
+        combinedFields.insert({"REST", std::make_pair(timeString, "time")});
+        $$ = new RepDetail(
+            -1, // Rep number
             combinedFields, // Custom fields
            aliasToNameMap,
            "rep" + std::string($2)
@@ -426,19 +464,19 @@ field_value_pair:
             time = *new Time(*new std::string($2));
      }
      catch (const InvalidHour& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($2));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1)+std::string($2));
         printErrorMessage(correctLineNo, "Invalid Hour", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($2));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1)+std::string($2));
         printErrorMessage(correctLineNo, "Invalid Minute", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($2));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1)+std::string($2));
         printErrorMessage(correctLineNo, "Invalid Second", e.what());
         exit(EXIT_FAILURE);
 
