@@ -71,7 +71,6 @@ public:
     Exercise(std::string n, int s, int r,
              std::vector<SetDetail*> sd, 
              const std::map<std::string, std::pair<std::string, std::string> >& fields, 
-             const std::map<std::string, std::string>& aliasToNameMap, 
              std::string lineId);
 
     /**

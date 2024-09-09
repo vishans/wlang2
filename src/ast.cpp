@@ -67,8 +67,7 @@ SetDetail::~SetDetail() {
 // Implementation of Exercise class
 Exercise::Exercise(string n, int s, int r, 
 vector<SetDetail*> sd,
-const map<string, pair<string, string> >& fields, 
-const map<string, string>& aliasToNameMap, 
+const map<string, pair<string, string> >& fields,
 std::string lineId)
 
     : name(n), sets(s), reps(r), setDetails(sd)

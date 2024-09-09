@@ -187,7 +187,6 @@ exercise:
             std::stoi($6),                  // Convert reps to int
             *$9,                             // setDetails
             *$7,                             // fields
-            aliasToNameMap,
             "sets" + *new std::string($4)
 
         ); 
@@ -199,8 +198,7 @@ exercise:
             std::stoi($4),                  // Convert sets to int
             std::stoi($6),                  // Convert reps to int
             *$8,                             // setDetails
-            *new std::map<std::string, std::pair<std::string, std::string> >(),                             // fields
-            aliasToNameMap,
+            *new std::map<std::string, std::pair<std::string, std::string> >(),                             // fields,
             "sets" + *new std::string($4)
 
         ); 
@@ -212,7 +210,6 @@ exercise:
             std::stoi($6),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *$7,                         // fields
-            aliasToNameMap,
             "sets"+ *new std::string($4)
         ); 
     }
@@ -223,7 +220,6 @@ exercise:
             std::stoi($6),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
-            aliasToNameMap,
             "sets"+ *new std::string($4)
         ); 
     }
@@ -261,7 +257,6 @@ exercise:
         $$ = new Exercise("REST", -1, -1,
                                 *new std::vector<SetDetail*>(),
                                 fields,
-                                aliasToNameMap, // Won't be needed
                                 "REST"
                                 ); 
                                 
