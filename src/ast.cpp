@@ -71,7 +71,46 @@ const map<string, pair<string, string> >& fields,
 const map<string, string>& aliasToNameMap, 
 std::string lineId)
 
-    : name(n), sets(s), reps(r), setDetails(sd) {
+    : name(n), sets(s), reps(r), setDetails(sd)
+    {
+        // Populate customFields with the relevant fields and values
+    string actualField;
+    for (const auto& [field, valueType] : fields) {
+        const auto& [value, type] = valueType;
+        actualField = field;
+
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+                int correctLineNo = getActualLineNumber(line_number, lineId);
+                printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        // Type check
+        if(type != nameToTypeMap.at(actualField)){
+            // Type error
+
+            std::string errorMessage = "The field '" + field + "' has the wrong type."
+            + "\n"
+            + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+            ;
+           
+            int correctLineNo = getActualLineNumber(line_number, lineId);
+            printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
+
+            exit(EXIT_FAILURE);
+        }
+        
+        customFields[actualField] = fields.at(field);
+        
+    }
 }
 
 // Destructor to clean up dynamically allocated SetDetail objects
@@ -108,13 +147,14 @@ void Workout::printWorkout() const {
     for (Exercise* exercise : exerciseList->exercises) {
         cout << "Exercise: " << exercise->name
              << ", Sets: " << exercise->sets
-             << ", Reps: " << exercise->reps
-             << ", Weight: " << exercise->weight << endl;
+             << ", Reps: " << exercise->reps;
 
         // Print custom fields for the exercise
         for (const auto& field : exercise->customFields) {
-            cout << "    " << field.first << ": " << field.second.first << endl;
+            cout << ", " << field.first << ": " << field.second.first << "," << field.second.second;
         }
+
+        std::cout << std::endl;
 
         // Print details of each set
         for (SetDetail* setDetail : exercise->setDetails) {
