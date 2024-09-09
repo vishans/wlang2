@@ -23,8 +23,12 @@ void yyerror(const char *s);
 Workout *parsedWorkout = nullptr; // To store the final parsed workout
 
 std::map<std::string, std::string> aliasToNameMap;
-std::map<std::string, std::string> nameToTypeMap;
+std::map<std::string, std::string> nameToTypeMap = *new std::map<std::string, std::string>();
 std::map<std::string, std::string> nameToDefaultMap;
+
+void initializeMaps() {
+    nameToTypeMap.insert({"REST", "time"});
+}
 
 extern int yylineno;
 extern char *yytext;
@@ -136,9 +140,6 @@ field_value:
     | FLOAT_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "float"); }
     | BOOLEAN_LITERAL{ $$ = new std::pair<std::string, std::string>(*new std::string($1), "boolean"); }
     | TIME_LITERAL { 
-        //Time time = *new Time(std::string($1));
-        //std::string timeString = std::to_string(time.convertIntoSeconds());
-
 
      Time time;
 
@@ -226,12 +227,45 @@ exercise:
             "sets"+ *new std::string($4)
         ); 
     }
-    | REST { $$ = new Exercise("REST", -1, -1,
+    | REST TIME_LITERAL { 
+        Time time;
+        
+        try{
+            time = *new Time(*new std::string($2));
+        }
+        catch (const InvalidHour& e){
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+        catch (const InvalidMinute& e){
+            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+        catch (const InvalidSecond& e){
+            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+
+
+        std::string timeString = std::to_string(time.convertIntoSeconds());
+
+        std::map<std::string, std::pair<std::string, std::string> > fields;
+        fields.insert({"REST", std::make_pair(timeString, "time")});
+
+        $$ = new Exercise("REST", -1, -1,
                                 *new std::vector<SetDetail*>(),
-                                *new std::map<std::string, std::pair<std::string, std::string> >(),
+                                fields,
                                 aliasToNameMap, // Won't be needed
                                 "REST"
-                                ); }
+                                ); 
+                                
+                                }
     ;
 
 set_details:
@@ -243,6 +277,44 @@ set_detail:
     SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2), *$4); }
     | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>()) }
     | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>()) }
+    | REST TIME_LITERAL { 
+        std::vector<RepDetail*> tempRD = *new std::vector<RepDetail*>();
+        std::map<std::string, std::pair<std::string, std::string> > fields = *new std::map<std::string, 
+        std::pair<std::string, std::string> >();
+
+        Time time;
+        
+        try{
+            time = *new Time(*new std::string($2));
+        
+        }
+        catch (const InvalidHour& e){
+            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+        catch (const InvalidMinute& e){
+            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+        catch (const InvalidSecond& e){
+            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            exit(EXIT_FAILURE);
+
+        }
+        
+        fields.insert({"REST", std::make_pair<std::string, std::string>(std::to_string(time.convertIntoSeconds()), "time")});
+
+        tempRD.push_back(new RepDetail(-1, fields, 
+        *new std::map<std::string, std::string>(),
+        "rest" + *new std::string($2)));
+
+        $$ = new SetDetail(-1, tempRD) ;
+                            }
     ;
 
 rep_details:
