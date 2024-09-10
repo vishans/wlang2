@@ -96,14 +96,19 @@ field_def:
     FIELD IDENTIFIER TYPE field_type DEFAULT field_value AS IDENTIFIER { 
         aliasToNameMap[$8] = $2;
         nameToTypeMap[$2] = *$4;
-        if(*$4 != $6->second){
-            std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
-            "\n" + 
-            " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
-            int correctLineNo = getActualLineNumber(line_number, $6->first);
-            printErrorMessage(correctLineNo, "Type Mismatch", message);
-            exit(EXIT_FAILURE);
+        if(*$4 != $6->second){
+
+            if(!(*$4 == "float" && $6->second == "integer")){
+
+                std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
+                "\n" + 
+                " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
+
+                int correctLineNo = getActualLineNumber(line_number, $6->first);
+                printErrorMessage(correctLineNo, "Type Mismatch", message);
+                exit(EXIT_FAILURE);
+            }
 
         }
         nameToDefaultMap[$2] = $6->first;
@@ -112,13 +117,18 @@ field_def:
         nameToTypeMap[$2] = *$4;
 
         if(*$4 != $6->second){
-            std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
-            "\n" + 
-            " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
-            int correctLineNo = getActualLineNumber(line_number, $6->first);
-            printErrorMessage(correctLineNo, "Type Mismatch", message);
-            exit(EXIT_FAILURE);
+            if(!(*$4 == "float" && $6->second == "integer")){
+
+                std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
+                "\n" + 
+                " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
+
+                int correctLineNo = getActualLineNumber(line_number, $6->first);
+                printErrorMessage(correctLineNo, "Type Mismatch", message);
+                exit(EXIT_FAILURE);
+
+            }
 
         }
 

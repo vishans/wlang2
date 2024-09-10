@@ -36,15 +36,21 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, c
         if(type != nameToTypeMap.at(actualField)){
             // Type error
 
-            std::string errorMessage = "The field '" + field + "' has the wrong type."
-            + "\n"
-            + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
-            ;
-           
-            int correctLineNo = getActualLineNumber(line_number, lineId);
-            printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
+            if(!(type == "integer" && nameToTypeMap.at(actualField) == "float")){
 
-            exit(EXIT_FAILURE);
+                std::string errorMessage = "The field '" + field + "' has the wrong type."
+                + "\n"
+                + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+                ;
+
+                std::cout << "in here " << std::endl;
+                
+                int correctLineNo = getActualLineNumber(line_number, lineId);
+                printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
+
+                exit(EXIT_FAILURE);
+
+            }
         }
         
         customFields[actualField] = fields.at(field);
@@ -81,6 +87,9 @@ std::string lineId,
         if(type != nameToTypeMap.at(actualField)){
             // Type error
 
+            if(!(type == "integer" && nameToTypeMap.at(actualField) == "float")){
+
+
             std::string errorMessage = "The field '" + field + "' has the wrong type."
             + "\n"
             + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
@@ -90,6 +99,8 @@ std::string lineId,
             printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
 
             exit(EXIT_FAILURE);
+
+            }
         }
         
         customFields[actualField] = fields.at(field);
@@ -139,6 +150,9 @@ std::string lineId)
         if(type != nameToTypeMap.at(actualField)){
             // Type error
 
+            if(!(type == "integer" && nameToTypeMap.at(actualField) == "float")){
+
+
             std::string errorMessage = "The field '" + field + "' has the wrong type."
             + "\n"
             + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
@@ -148,6 +162,8 @@ std::string lineId)
             printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
 
             exit(EXIT_FAILURE);
+
+            }
         }
         
         customFields[actualField] = fields.at(field);
