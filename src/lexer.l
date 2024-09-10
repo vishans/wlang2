@@ -44,6 +44,9 @@ int line_number = 1;
 [ \t]+              { /* ignore whitespace */ }
 \n                  { line_number++; }
 .                   { std::cerr << "Unknown character: " << yytext << " at line " << line_number << std::endl; return yytext[0]; }
+"//".* { /* Ignore line comment */ }
+"/*"([^*]|[\r\n]|"*"[^/])*"*/" { /* Ignore block comment */ }
+
 %%
 
 // Function to handle errors
