@@ -216,7 +216,16 @@ void Workout::printWorkout() const {
 
         // Print details of each set
         for (SetDetail* setDetail : exercise->setDetails) {
-            cout << "  Set " << setDetail->setNumber << ":" << endl;
+            cout << "  Set " << setDetail->setNumber;
+            
+            for (const auto& field : setDetail->customFields) {
+            cout << ", " << field.first << ": " << field.second.first << "," << field.second.second;
+            }
+
+            std::cout << " " << std::endl;
+           
+           
+           
             for (RepDetail* repDetail : setDetail->repDetails) {
                 cout << "    Rep " << repDetail->repNumber;
 

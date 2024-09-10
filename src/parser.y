@@ -280,11 +280,44 @@ set_details:
 
 set_detail:
     SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2), *$4, "set"+ *new std::string($2)); }
-    // TO DO: SET INTEGER_LITERAL custom_fields...  
+    |
+
+    // custom fields
+    SET INTEGER_LITERAL custom_fields '{' rep_details '}' { 
+        std::map<std::string, std::pair<std::string, std::string> > combinedFields;
+        combinedFields.insert($3->begin(), $3->end());
+    
+        
+        $$ = new SetDetail(std::stoi($2), *$5, "set"+ *new std::string($2), combinedFields); }
+
+
     | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2)) }
+
+    // custom fields
+    | SET INTEGER_LITERAL custom_fields { 
+
+        std::map<std::string, std::pair<std::string, std::string> > combinedFields;
+        combinedFields.insert($3->begin(), $3->end());
+    
+
+        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2), combinedFields);
+        
+    }
+
     
     | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2)) }
-    
+
+    // custom_fields
+    | SET INTEGER_LITERAL custom_fields '{' '}' { 
+
+        std::map<std::string, std::pair<std::string, std::string> > combinedFields;
+        combinedFields.insert($3->begin(), $3->end());
+
+        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2), combinedFields); 
+        
+        }
+
+
     | REST TIME_LITERAL { 
         std::vector<RepDetail*> tempRD = *new std::vector<RepDetail*>();
         std::map<std::string, std::pair<std::string, std::string> > fields = *new std::map<std::string, 
