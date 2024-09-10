@@ -37,24 +37,30 @@ Here's a sneak peek at how you can define a workout using W Language:
 **(Note: Some of the features have not yet been implemented and some aspects of the syntax might change in the future)**
 
 ```plaintext
+
+field weight type float default 0
+
 workout {
-    exercise "squats" sets 3 reps 10 weight "100kg" {
+    exercise "squats" sets 3 reps 10 weight 100 {
         set 1 {
-            reps 1-5 weight "100kg"
-            rep 6 weight "90kg"
-            reps 7-10 weight "100kg"
+            reps 1-5 weight 100
+            rep 6 weight 90
+            rest 1m
+            reps 7-10 weight 69.69
         }
-        rest 2min30s
+        rest 2m30s
 
         set 2 {
-            rep 8 weight "90kg"
+            rep 8 weight 90
         }
-        rest 2min30s
+
+        rest 2m30s
 
         set 3 {
-            rep 1 weight "80kg"
-            reps 2-10 weight "80kg"
+            rep 1 weight 80
+            reps 2-10 weight 69
         }
-        rest 3min
+
+        rest 3m
     }
 }
