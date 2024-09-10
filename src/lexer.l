@@ -35,8 +35,8 @@ int line_number = 1;
 "true"|"false"      { yylval.str = strdup(yytext); return BOOLEAN_LITERAL; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.str = strdup(yytext); return IDENTIFIER; }
 \"[^\"]*\"          { yylval.str = strdup(yytext); return STRING; }
-[0-9]+\.[0-9]+      { yylval.str = strdup(yytext); return FLOAT_LITERAL; }
 [0-9]+              { yylval.str = strdup(yytext); return INTEGER_LITERAL; }
+[0-9]*(\.[0-9]+)?   { yylval.str = strdup(yytext); return FLOAT_LITERAL; }
 ([0-9]+h)?([0-9]+m)?([0-9]+s)?  { yylval.str = strdup(yytext); return TIME_LITERAL; }
 "{"                 { return '{'; }
 "}"                 { return '}'; }
