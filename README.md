@@ -38,13 +38,20 @@ Here's a sneak peek at how you can define a workout using W Language:
 
 ```plaintext
 
-field weight type float default 0
+// W supports both in-line and block comments
+
+/*
+Lower Body Workout 
+September 10, 2024
+*/
+
+field weight type float default 0 as w // 'w' is an alias for weight
 
 workout {
     exercise "squats" sets 3 reps 10 weight 100 {
         set 1 {
             reps 1-5 weight 100
-            rep 6 weight 90
+            rep 6 w 90 // using alias 'w' instead of 'weight'
             rest 1m
             reps 7-10 weight 69.69
         }
