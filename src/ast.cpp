@@ -53,8 +53,51 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, c
 }
 
 // Implementation of SetDetail class
-SetDetail::SetDetail(int sn, vector<RepDetail*> rd)
-    : setNumber(sn), repDetails(rd) {
+SetDetail::SetDetail(int sn, vector<RepDetail*> rd,
+std::string lineId,
+ std::map<std::string, std::pair<std::string, std::string> >fields
+) : setNumber(sn), repDetails(rd) {
+
+    string actualField;
+    for (const auto& [field, valueType] : fields) {
+        const auto& [value, type] = valueType;
+        actualField = field;
+
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+                int correctLineNo = getActualLineNumber(line_number, lineId);
+                printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        // Type check
+        if(type != nameToTypeMap.at(actualField)){
+            // Type error
+
+            std::string errorMessage = "The field '" + field + "' has the wrong type."
+            + "\n"
+            + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+            ;
+           
+            int correctLineNo = getActualLineNumber(line_number, lineId);
+            printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
+
+            exit(EXIT_FAILURE);
+        }
+        
+        customFields[actualField] = fields.at(field);
+        
+    }
+
+
+
 }
 
 // Destructor to clean up dynamically allocated RepDetail objects

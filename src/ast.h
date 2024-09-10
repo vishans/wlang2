@@ -33,6 +33,8 @@ class SetDetail {
 public:
     int setNumber;                        // The set number (e.g., 1st set, 2nd set)
     std::vector<RepDetail*> repDetails;   // A vector of RepDetail objects, each representing a rep
+    std::map<std::string, std::pair<std::string, std::string> > customFields; // Custom fields associated with the Set
+    
 
     /**
      * Constructor for SetDetail
@@ -40,7 +42,11 @@ public:
      * @param sn The set number
      * @param rd A vector of RepDetail pointers representing the repetitions in this set
      */
-    SetDetail(int sn, std::vector<RepDetail*> rd);
+    SetDetail(int sn, std::vector<RepDetail*> rd,
+    std::string lineId,
+     std::map<std::string, std::pair<std::string, std::string> > fields  = *new std::map<std::string, std::pair<std::string, std::string> >());
+
+    //  = *new std::map<std::string, std::pair<std::string, std::string> >()
 
     /**
      * Destructor for SetDetail

@@ -269,9 +269,12 @@ set_details:
     ;
 
 set_detail:
-    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2), *$4); }
-    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>()) }
-    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>()) }
+    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2), *$4, "set"+ *new std::string($2)); }
+    // TO DO: SET INTEGER_LITERAL custom_fields...  
+    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2)) }
+    
+    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2)) }
+    
     | REST TIME_LITERAL { 
         std::vector<RepDetail*> tempRD = *new std::vector<RepDetail*>();
         std::map<std::string, std::pair<std::string, std::string> > fields = *new std::map<std::string, 
@@ -308,7 +311,7 @@ set_detail:
         *new std::map<std::string, std::string>(),
         "rest" + *new std::string($2)));
 
-        $$ = new SetDetail(-1, tempRD) ;
+        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2)) ;
                             }
     ;
 
