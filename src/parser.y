@@ -197,7 +197,8 @@ exercise:
             std::stoi($6),                  // Convert reps to int
             *$9,                             // setDetails
             *$7,                             // fields
-            "sets" + *new std::string($4)
+            "sets" + *new std::string($4),
+            line_number
 
         ); 
     }
@@ -209,7 +210,8 @@ exercise:
             std::stoi($6),                  // Convert reps to int
             *$8,                             // setDetails
             *new std::map<std::string, std::pair<std::string, std::string> >(),                             // fields,
-            "sets" + *new std::string($4)
+            "sets" + *new std::string($4),
+            line_number
 
         ); 
     }
@@ -220,7 +222,8 @@ exercise:
             std::stoi($6),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *$7,                         // fields
-            "sets"+ *new std::string($4)
+            "sets"+ *new std::string($4),
+            line_number
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL { 
@@ -230,7 +233,8 @@ exercise:
             std::stoi($6),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
-            "sets"+ *new std::string($4)
+            "sets"+ *new std::string($4),
+            line_number
         ); 
     }
     | REST TIME_LITERAL { 
@@ -267,7 +271,8 @@ exercise:
         $$ = new Exercise("REST", -1, -1,
                                 *new std::vector<SetDetail*>(),
                                 fields,
-                                "REST"
+                                "REST", 
+                                line_number
                                 ); 
                                 
                                 }
@@ -279,7 +284,7 @@ set_details:
     ;
 
 set_detail:
-    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2), *$4, "set"+ *new std::string($2)); }
+    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2), *$4, "set"+ *new std::string($2), line_number); }
     |
 
     // custom fields
@@ -288,10 +293,10 @@ set_detail:
         combinedFields.insert($3->begin(), $3->end());
     
         
-        $$ = new SetDetail(std::stoi($2), *$5, "set"+ *new std::string($2), combinedFields); }
+        $$ = new SetDetail(std::stoi($2), *$5, "set"+ *new std::string($2), line_number, combinedFields); }
 
 
-    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2)) }
+    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2), line_number) }
 
     // custom fields
     | SET INTEGER_LITERAL custom_fields { 
@@ -300,12 +305,12 @@ set_detail:
         combinedFields.insert($3->begin(), $3->end());
     
 
-        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2), combinedFields);
+        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2), line_number, combinedFields);
         
     }
 
     
-    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2)) }
+    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2), line_number) }
 
     // custom_fields
     | SET INTEGER_LITERAL custom_fields '{' '}' { 
@@ -313,7 +318,7 @@ set_detail:
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($3->begin(), $3->end());
 
-        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2), combinedFields); 
+        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2), line_number, combinedFields); 
         
         }
 
@@ -351,10 +356,9 @@ set_detail:
         fields.insert({"REST", std::make_pair<std::string, std::string>(std::to_string(time.convertIntoSeconds()), "time")});
 
         tempRD.push_back(new RepDetail(-1, fields, 
-        *new std::map<std::string, std::string>(),
-        "rest" + *new std::string($2)));
+        "rest" + *new std::string($2), line_number));
 
-        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2)) ;
+        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2), line_number) ;
                             }
     ;
 
@@ -381,8 +385,8 @@ rep_detail:
         $$ = new RepDetail(
             std::stoi($2), // Rep number
             *new std::map<std::string, std::pair<std::string, std::string> >(), // Empty custom fields
-            *new std::map<std::string, std::string>(), // Since custom fields are empty no need for alias
-            "rep" + std::string($2)
+            "rep" + std::string($2),
+            line_number
         );
     }
     | REP INTEGER_LITERAL custom_fields {
@@ -391,8 +395,8 @@ rep_detail:
         $$ = new RepDetail(
             std::stoi($2), // Rep number
             combinedFields, // Custom fields
-           aliasToNameMap,
-           "rep" + std::string($2)
+           "rep" + std::string($2),
+           line_number
         );
     }
     | REST TIME_LITERAL {
@@ -429,8 +433,8 @@ rep_detail:
         $$ = new RepDetail(
             -1, // Rep number
             combinedFields, // Custom fields
-           aliasToNameMap,
-           "rep" + std::string($2)
+           "rep" + std::string($2),
+           line_number
         );
     }
     ;
@@ -442,8 +446,8 @@ rep_range:
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 *new std::map<std::string, std::pair<std::string,std::string> >(), // Empty custom fields
-                *new std::map<std::string, std::string>(), // No need for alias
-                "reps" + std::string($2) + "-" + std::string($4)
+                "reps" + std::string($2) + "-" + std::string($4),
+                line_number
                 
             ));
         }
@@ -456,8 +460,8 @@ rep_range:
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 combinedFields, // Custom fields
-                aliasToNameMap,
-                "reps" + std::string($2) + "-" + std::string($4)
+                "reps" + std::string($2) + "-" + std::string($4),
+                line_number
 
             ));
         }

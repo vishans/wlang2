@@ -11,6 +11,8 @@
 class RepDetail {
 public:
     int repNumber;                             // The repetition number (e.g., 1, 2, 3)
+    std::string lineId;
+    int lineNumber;
     std::map<std::string, std::pair<std::string, std::string> > customFields; // Custom fields associated with this rep
 
     /**
@@ -22,8 +24,10 @@ public:
      * @param aliases The aliases used for custom fields
      */
     RepDetail(int rn, const std::map<std::string, 
-    std::pair<std::string, std::string> >& fields, const std::map<std::string, std::string>& aliasToNameMap,
-    std::string lineId);
+    std::pair<std::string, std::string> >& fields,
+    std::string lineId, int lineNumber);
+
+    void inherit(const std::map<std::string, std::pair<std::string, std::string> > globalFields);
 };
 
 /**
@@ -34,6 +38,9 @@ public:
     int setNumber;                        // The set number (e.g., 1st set, 2nd set)
     std::vector<RepDetail*> repDetails;   // A vector of RepDetail objects, each representing a rep
     std::map<std::string, std::pair<std::string, std::string> > customFields; // Custom fields associated with the Set
+    int lineNumber;
+    std::string lineId;
+    int numberOfReps;
     
 
     /**
@@ -44,9 +51,31 @@ public:
      */
     SetDetail(int sn, std::vector<RepDetail*> rd,
     std::string lineId,
+    int lineNumber,
      std::map<std::string, std::pair<std::string, std::string> > fields  = *new std::map<std::string, std::pair<std::string, std::string> >());
 
-    //  = *new std::map<std::string, std::pair<std::string, std::string> >()
+    /**
+     * Makes sure Reps start with 1 and are contiguous
+     */
+    void tally();
+
+    /**
+     * Fills in missing reps in a set
+     */
+    void expand();
+    
+    
+    /**
+     * Inherit fields from Exercise
+     */
+    void inherit();
+
+    /**
+     * Finds the maximum rep number in this set
+     */
+    int findMaximumRepNumber();
+
+    void setReps(std::vector<RepDetail*> reps);
 
     /**
      * Destructor for SetDetail
@@ -65,6 +94,8 @@ public:
     std::string weight;                          // The weight used for the exercise
     std::vector<SetDetail*> setDetails;          // A vector of SetDetail objects representing sets
     std::map<std::string, std::pair<std::string, std::string> > customFields; // Custom fields associated with the exercise
+    int lineNumber;
+    std::string lineId;
 
     /**
      * Constructor for Exercise
@@ -77,12 +108,14 @@ public:
     Exercise(std::string n, int s, int r,
              std::vector<SetDetail*> sd, 
              const std::map<std::string, std::pair<std::string, std::string> >& fields, 
-             std::string lineId);
+             std::string lineId, int lineNumber);
 
     /**
      * Destructor for Exercise
      */
     ~Exercise();
+
+    void passDownRepNumberToSets();
 };
 
 /**
