@@ -75,6 +75,8 @@ public:
      */
     int findMaximumRepNumber();
 
+    void passDownFieldsToReps();
+
     void setReps(std::vector<RepDetail*> reps);
 
     /**

@@ -126,6 +126,12 @@ int lineNumber,
 }
 
 void SetDetail::tally(){
+    // TODO: 
+    /*
+    Reps do not need to start with one but must be increasing
+    Holes in reps will be filled by expand
+    The algo below needs to be modified
+    */
     int count = 1;
     for(const RepDetail* rep: repDetails){ 
         if(rep->repNumber != -1 && rep->repNumber != count){
@@ -239,6 +245,12 @@ void SetDetail::setReps(std::vector<RepDetail*> reps){
 
     for(auto rep : reps){
         repDetails.push_back(rep);
+    }
+}
+
+void SetDetail::passDownFieldsToReps(){
+    for(RepDetail* rep: repDetails){
+        rep->inherit(customFields);
     }
 }
 
@@ -364,6 +376,7 @@ void Workout::printWorkout() const {
             std::cout << " " << std::endl;
            
         //    setDetail->tally();
+            setDetail->passDownFieldsToReps();
             setDetail->expand();
            
             for (RepDetail* repDetail : setDetail->repDetails)
