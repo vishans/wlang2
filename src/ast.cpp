@@ -346,6 +346,16 @@ void Exercise::passDownRepNumberToSets(){
     }
 }
 
+void Exercise::inheritGlobalFields(){
+    for(const auto& [fieldName, defaultValue]: nameToDefaultMap){
+        if(customFields.find(fieldName) == customFields.end()){
+            std::string type = nameToTypeMap.at(fieldName);
+
+            customFields[fieldName] = {defaultValue, type};
+        }
+    }
+}
+
 void Exercise::passDownFieldsToSets(){
     for(SetDetail* set: setDetails){
         set->inherit(customFields);
@@ -388,6 +398,7 @@ void Workout::printWorkout() const {
 
         std::cout << std::endl;
 
+        exercise->inheritGlobalFields();
         exercise->passDownRepNumberToSets();
         exercise->passDownFieldsToSets();
 

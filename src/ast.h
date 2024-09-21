@@ -120,6 +120,8 @@ public:
     void passDownRepNumberToSets();
 
     void passDownFieldsToSets();
+
+    void inheritGlobalFields();
 };
 
 /**
