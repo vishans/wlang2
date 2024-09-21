@@ -359,6 +359,25 @@ void Exercise::passDownFieldsToSets(){
     }
 }
 
+void Exercise::tally(){
+    int prev = 0;
+
+    for(const SetDetail* set: setDetails){
+        if(set->setNumber != -1){ // Skip Rest set
+            if(set->setNumber <= prev){
+
+                std::string errorMessage = "Sets should be positive and increasing.";
+                int correctLineNo = getActualLineNumber(set->lineNumber, set->lineId);
+                printErrorMessage(correctLineNo, "Invalid Sets", errorMessage);
+
+                exit(EXIT_FAILURE);
+            }
+
+            prev = set->setNumber;
+        }
+    }
+}
+
 // Implementation of ExerciseList class
 void ExerciseList::addExercise(Exercise* e) {
     exercises.push_back(e);
@@ -394,6 +413,8 @@ void Workout::printWorkout() const {
         }
 
         std::cout << std::endl;
+
+        exercise->tally();
 
         exercise->inheritGlobalFields();
         exercise->passDownRepNumberToSets();

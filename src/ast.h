@@ -122,6 +122,10 @@ public:
     void passDownFieldsToSets();
 
     void inheritGlobalFields();
+
+    void tally();
+
+    void expand();
 };
 
 /**
