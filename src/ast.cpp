@@ -63,7 +63,7 @@ void RepDetail::inherit(const std::map<std::string, std::pair<std::string, std::
 
         const auto& [value, type] = valueType;
 
-        if(customFields.find(field) != customFields.end()){
+        if(customFields.find(field) == customFields.end()){
             customFields[field] = {value, type};
         }
 
@@ -254,6 +254,25 @@ void SetDetail::passDownFieldsToReps(){
     }
 }
 
+void SetDetail::inherit(const std::map<std::string, std::pair<std::string, std::string> > setFields){
+    // std::cout <<"set number " <<setNumber << std::endl;
+    for(const auto& [field, valueType]: setFields){
+
+        const auto& [value, type] = valueType;
+
+        if(customFields.find(field) == customFields.end()){
+            customFields[field] = {value, type};
+
+            // std::cout << field << " is not present. SO ADDING <<<" << std::endl;
+        }else{
+            // std::cout << field << " is already present" << std::endl;
+        }
+
+    }
+
+    // std::cout << std::endl << std::endl;
+}
+
 // Destructor to clean up dynamically allocated RepDetail objects
 SetDetail::~SetDetail() {
     for (auto rep : repDetails) {
@@ -327,6 +346,12 @@ void Exercise::passDownRepNumberToSets(){
     }
 }
 
+void Exercise::passDownFieldsToSets(){
+    for(SetDetail* set: setDetails){
+        set->inherit(customFields);
+    }
+}
+
 // Implementation of ExerciseList class
 void ExerciseList::addExercise(Exercise* e) {
     exercises.push_back(e);
@@ -364,6 +389,7 @@ void Workout::printWorkout() const {
         std::cout << std::endl;
 
         exercise->passDownRepNumberToSets();
+        exercise->passDownFieldsToSets();
 
         // Print details of each set
         for (SetDetail* setDetail : exercise->setDetails) {

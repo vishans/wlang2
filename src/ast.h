@@ -68,7 +68,7 @@ public:
     /**
      * Inherit fields from Exercise
      */
-    void inherit();
+    void inherit(const std::map<std::string, std::pair<std::string, std::string> > setFields);
 
     /**
      * Finds the maximum rep number in this set
@@ -118,6 +118,8 @@ public:
     ~Exercise();
 
     void passDownRepNumberToSets();
+
+    void passDownFieldsToSets();
 };
 
 /**
