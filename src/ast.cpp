@@ -221,6 +221,13 @@ void SetDetail::expand(){
     
    }
 
+   // Add remaining reps if any
+   int lastSetNumber = reps[reps.size()-1]->repNumber;
+   
+   for(int i = lastSetNumber+1; i <= numberOfReps; i++){
+        reps.push_back(new RepDetail(i, customFields, "-1", -1));
+   }
+
     for (RepDetail* rep : repDetails) {
         delete rep; // Free the memory for each pointer
     }
