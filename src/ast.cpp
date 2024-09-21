@@ -4,6 +4,7 @@
 #include <cstdlib> // For exit()
 #include "error.h"
 #include "helper.h"
+#include <algorithm>
 
 
 using namespace std;
@@ -378,6 +379,65 @@ void Exercise::tally(){
     }
 }
 
+int Exercise::findMaximumSetNumber(){
+    int max = -1;
+    for(const SetDetail* set: setDetails){
+        if(set->setNumber > max){
+            max = set->setNumber;
+        }
+    }
+
+    return max;
+}
+
+void Exercise::expand(){
+
+    if(sets < 0) return; // Skip REST
+
+
+    int maxSetNo = std::max(findMaximumSetNumber(), sets);
+    // std::cout << "Max set num is " << maxSetNo << std::endl;
+    std::vector<SetDetail*> tempSets;
+    SetDetail* currentSet;
+
+    int i = 0, j = 1;
+
+    while(i < setDetails.size()){
+        // std::cout << "i is " << i << std::endl;
+
+        currentSet = setDetails[i];
+        // std::cout<< "Current set number " << currentSet->setNumber << std::endl;
+
+        if(currentSet->setNumber < 0){ // REST
+            i++;
+            tempSets.push_back(currentSet);
+            continue; // Skip it
+        }
+
+        if(currentSet->setNumber != j){
+            // Fill in that missing set
+            tempSets.push_back(new SetDetail(j, *new std::vector<RepDetail*>, "-1", -1));
+            
+            
+        }else{
+            tempSets.push_back(currentSet);
+            i++;
+        }
+
+        j++; // Increase j no matter what since we pushed back a set into the temp vector
+
+    }
+
+    // Add any remaining missing sets
+    while (j <= maxSetNo) {
+        tempSets.push_back(new SetDetail(j, std::vector<RepDetail*>(), "-1", -1));
+        j++;
+    }
+
+    setDetails = tempSets;
+
+}
+
 // Implementation of ExerciseList class
 void ExerciseList::addExercise(Exercise* e) {
     exercises.push_back(e);
@@ -415,6 +475,7 @@ void Workout::printWorkout() const {
         std::cout << std::endl;
 
         exercise->tally();
+        exercise->expand();
 
         exercise->inheritGlobalFields();
         exercise->passDownRepNumberToSets();

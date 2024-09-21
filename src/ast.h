@@ -126,6 +126,8 @@ public:
     void tally();
 
     void expand();
+
+    int findMaximumSetNumber();
 };
 
 /**
