@@ -60,13 +60,14 @@ extern char *yytext;
 %token <str> FLOAT_LITERAL
 %token <str> BOOLEAN_LITERAL
 %token <str> TIME_LITERAL
-%token WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS
+%token WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS FAIL
 %token STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE
 
 %type <exercise> exercise
 %type <workout> workout
 %type <exerciseList> exercise_list
 %type <setDetails> set_details
+%type <setDetails> set_details_without_fail
 %type <setDetail> set_detail
 
 %type <repDetails> rep_details
@@ -279,6 +280,25 @@ exercise:
     ;
 
 set_details:
+    set_details_without_fail { $$ = $1 };
+    
+    | set_details_without_fail FAIL {
+
+        std::vector<RepDetail*> reps = *new std::vector<RepDetail*>();
+        RepDetail* failRep = new RepDetail(-2, *new std::map<std::string, std::pair<std::string, std::string> >(), "-2", -2);
+
+        reps.push_back(failRep);
+        
+        SetDetail* failSet = new SetDetail(-2, reps, *new std::string("fail"), line_number) ;
+        //failSet->repDetails.push_back(failRep);
+                
+        $1->push_back(failSet); 
+        
+        $$ = $1;
+        
+        };
+
+set_details_without_fail:
     set_details set_detail { $$ = $1; $1->push_back($2); }
     | set_detail { $$ = new std::vector<SetDetail*>(); $$->push_back($1); }
     ;

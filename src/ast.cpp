@@ -130,7 +130,7 @@ void SetDetail::tally(){
     
     int prev = 0;
     for(const RepDetail* rep: repDetails){ 
-        if(rep->repNumber != -1){ // skip REST reps
+        if(rep->repNumber != -1 && rep->repNumber != -2){ // skip REST reps and FAIL reps
             if(rep->repNumber <= prev){
                 
                 std::string errorMessage = "Reps should be positive and increasing.";
@@ -164,15 +164,15 @@ void SetDetail::expand(){
                             // set 4 {} -> inherit set fields and exercise
 
     if(maxRepNo < 0){
-        if(setNumber != -1){ 
+        if(setNumber != -1 && setNumber != -2){ 
             for(int i = 0; i < numberOfReps; i++){
-                reps.push_back(new RepDetail(i+1, customFields, "-1", -1));
+                reps.push_back(new RepDetail(i+1, customFields, "-404", -404));
             }
 
             repDetails = move(reps);
 
         }
-
+       
         return;
     } 
 
@@ -228,10 +228,10 @@ void SetDetail::expand(){
         reps.push_back(new RepDetail(i, customFields, "-1", -1));
    }
 
-    for (RepDetail* rep : repDetails) {
-        delete rep; // Free the memory for each pointer
-    }
-    repDetails.clear(); // Remove all elements from the vector
+    // for (RepDetail* rep : repDetails) {
+    //     delete rep; // Free the memory for each pointer
+    // }
+    // repDetails.clear(); // Remove all elements from the vector
 
     repDetails = move(reps);
 
@@ -371,7 +371,7 @@ void Exercise::tally(){
     int prev = 0;
 
     for(const SetDetail* set: setDetails){
-        if(set->setNumber != -1){ // Skip Rest set
+        if(set->setNumber != -1 && set->setNumber != -2){ // Skip Rest set and fail set
             if(set->setNumber <= prev){
 
                 std::string errorMessage = "Sets should be positive and increasing.";
@@ -415,7 +415,14 @@ void Exercise::expand(){
         currentSet = setDetails[i];
         // std::cout<< "Current set number " << currentSet->setNumber << std::endl;
 
-        if(currentSet->setNumber < 0){ // REST
+        if(currentSet->setNumber < 0){ // REST or FAIL
+
+            if(currentSet->setNumber == -2){  // FAIL
+                setDetails = tempSets;
+                return;
+            }
+
+
             i++;
             tempSets.push_back(currentSet);
             continue; // Skip it
