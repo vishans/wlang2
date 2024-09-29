@@ -34,7 +34,6 @@ The original prototype of the W Language, built in 2022, was developed entirely 
 ## 📜 Example of W Language Syntax
 
 Here's a sneak peek at how you can define a workout using W Language:
-**(Note: Some of the features have not yet been implemented and some aspects of the syntax might change in the future)**
 
 ```plaintext
 
@@ -53,19 +52,20 @@ workout {
             reps 1-5 weight 100
             rep 6 w 90 // using alias 'w' instead of 'weight'
             rest 1m
-            reps 7-10 weight 69.69
+            reps 7-10 w 69.69
         }
         rest 2m30s
 
         set 2 {
-            rep 8 weight 90
+            rep 8 w 90
+            fail
         }
 
         rest 2m30s
 
         set 3 {
-            rep 1 weight 80
-            reps 2-10 weight 69
+            rep 1 w 80
+            reps 2-10 w 69
         }
 
         rest 3m
