@@ -70,6 +70,7 @@ extern char *yytext;
 %type <setDetails> set_details_without_fail
 %type <setDetail> set_detail
 
+%type <repDetails> rep_details_without_fail
 %type <repDetails> rep_details
 %type <repDetail> rep_detail
 %type <repDetails> rep_range
@@ -383,6 +384,21 @@ set_detail:
     ;
 
 rep_details:
+    rep_details_without_fail {
+        $$ = $1;
+    }
+    | rep_details_without_fail FAIL{
+        std::map<std::string, std::pair<std::string, std::string> > combinedFields;
+      
+        $$->push_back(new RepDetail(
+            -2, // Rep number
+            combinedFields, // Custom fields
+           "fail",
+           line_number
+        ));
+    }
+
+rep_details_without_fail:
     rep_details rep_detail {
         $1->push_back($2);
         $$ = $1;

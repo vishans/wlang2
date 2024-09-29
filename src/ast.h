@@ -62,7 +62,9 @@ public:
     /**
      * Fills in missing reps in a set
      */
-    void expand();
+    void expand(); // Deprecated
+
+    void expand2();
     
     
     /**

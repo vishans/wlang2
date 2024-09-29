@@ -141,6 +141,9 @@ void SetDetail::tally(){
             }
             prev = rep->repNumber;
         }
+        else{
+            std::cout<< "SKIPPED REST" <<std::endl;
+        }
     }
 }
 
@@ -154,7 +157,88 @@ int SetDetail::findMaximumRepNumber(){
     return max;
 }
 
+void SetDetail::expand2(){
+    std::vector<RepDetail*> reps;
+
+    if(setNumber < 0){ // The Set itself is either a REST (-1) or a FAIL (-2)
+        return; // Nothing to expand
+    }
+
+    if(repDetails.size() == 0 ){ // No reps inside
+        // Empty set clause
+        // Inherits everything from Set
+
+        for(int i = 0; i < numberOfReps; i++){
+            reps.push_back(new RepDetail(i+1, customFields, "-404", -404));
+        }
+
+        repDetails = std::move(reps);
+    }
+
+
+    int i = 0; // repDetails index
+    int j = 1; // actualRep
+
+
+    while(i < repDetails.size()){
+        RepDetail* currentRep = repDetails[i];
+
+        if(currentRep->repNumber < 0){ // Either a REST (-1) or a FAIL (-2) rep
+            if(currentRep->repNumber == -2){ // FAIL -> we abort everything
+                repDetails = std::move(reps);
+                return;
+
+            }
+
+            // Just a REST rep
+            reps.push_back(currentRep);
+            i++;
+            continue;
+        }
+
+        if(currentRep->repNumber != j){
+            reps.push_back(new RepDetail(j, customFields, "-404", -404)); // Fill
+            j++;
+
+        }
+        else{
+           reps.push_back(currentRep);
+           j++;
+           i++;
+
+        }
+    }
+
+    // Walking back to see where we left off and avoid REST and FAIL reps
+    // Might need to add remaining reps
+
+    int k = reps.size()-1;
+    while(k > 0 && reps[k]->repNumber < 0){
+        k--;
+    }
+
+    // Note k is the index of the last normal rep; not the rep itself
+
+    // Add the remaining reps if need be
+    for(int i = reps[k]->repNumber + 1; i <= numberOfReps; i++){
+        reps.push_back(new RepDetail(i, customFields, "-404", -404)); // Fill
+    }
+
+
+    repDetails = std::move(reps);
+
+}
+
 void SetDetail::expand(){
+
+    std::cout << "---" << std::endl;
+    int specialCount = 0;
+    for(auto rep: repDetails){
+        std::cout<< rep->repNumber << std::endl;
+        if(rep->repNumber < 0 ) specialCount++;
+    }
+    std::cout << "---" << std::endl;
+
 
     int maxRepNo = findMaximumRepNumber();
     vector<RepDetail*> reps;
@@ -198,7 +282,16 @@ void SetDetail::expand(){
     int repDetailsSize = repDetails.size();
 
    for(int i = 0; i < maxRepNo; i++){
+        // std::cout << "meow"<< std::endl;
         const RepDetail currentRep = *repDetails[j];
+        std::cout << "  Current NO " << currentRep.repNumber <<std::endl;
+        if(currentRep.repNumber < 0){
+            reps.push_back(repDetails[j]);
+            i--;
+            j++;
+            std::cout << "here" << std::endl;
+            continue;
+        }
        
 
         if(currentRep.repNumber == i + 1){
@@ -507,7 +600,7 @@ void Workout::printWorkout() const {
            
             setDetail->tally();
             setDetail->passDownFieldsToReps();
-            setDetail->expand();
+            setDetail->expand2();
            
             for (RepDetail* repDetail : setDetail->repDetails)
             //for (RepDetail* repDetail : setDetail->expand()) 
