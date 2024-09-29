@@ -1,6 +1,6 @@
 %{
-#include "ast.h"
-#include "parser.tab.hpp"
+#include "../ast/ast.h"
+#include "../parser/parser.tab.hpp"
 #include <string>
 #include <iostream>
 

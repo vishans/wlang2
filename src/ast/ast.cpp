@@ -1,9 +1,9 @@
 #include <iostream>
-#include "ast.h"
-#include "globals.h" // To be able to access nameToTypeMap for type checking
+#include "./ast.h"
+#include "../globals/globals.h" // To be able to access nameToTypeMap for type checking
 #include <cstdlib> // For exit()
-#include "error.h"
-#include "helper.h"
+#include "../error/error.h"
+#include "../helper/helper.h"
 #include <algorithm>
 
 

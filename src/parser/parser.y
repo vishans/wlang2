@@ -6,14 +6,14 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "ast.h"
+#include "../ast/ast.h"
 #include "parser.tab.hpp"
-#include "globals.h"
-#include "error.h"
+#include "../globals/globals.h"
+#include "../error/error.h"
 #include <cstdlib>
-#include "helper.h"
-#include "time.h"
-#include "timeError.h"
+#include "../helper/helper.h"
+#include "../time/time.h"
+#include "../time/timeError.h"
 
 // Declare external lexer function and necessary variables
 extern int yylex();

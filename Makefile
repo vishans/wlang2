@@ -1,38 +1,35 @@
 CXXFLAGS = -std=c++11 -Wall -Wextra
 
-all2:
-	flex -o src/lexer.cpp src/lexer.l  
-	bison -d --debug -o src/parser.tab.cpp src/parser.y  
-	g++ -c -o obj/parser.tab.o src/parser.tab.cpp
-	g++ -c -o obj/lexer.o src/lexer.cpp
-	g++ -c -o obj/ast.o src/ast.cpp
-	g++ -c -o obj/main.o src/main.cpp
-	g++ -c -o obj/error.o src/error.cpp
-	g++ -c -o obj/helper.o src/helper.cpp
-	g++ -c -o obj/time.o  src/time.cpp
-	g++ -c -o obj/timeError.o src/timeError.cpp
+SRC = src
+OBJ = obj
 
-	g++ -o w obj/parser.tab.o obj/lexer.o obj/ast.o obj/main.o obj/error.o obj/helper.o obj/time.o obj/timeError.o
+AST = $(SRC)/ast
+ERROR = $(SRC)/error
+HELPER = $(SRC)/helper
+LEXER = $(SRC)/lexer
+MAIN = $(SRC)/main
+PARSER = $(SRC)/parser
+TIME = $(SRC)/time
+
+OBJ_FILES = $(OBJ)/parser.tab.o $(OBJ)/lexer.o $(OBJ)/ast.o $(OBJ)/main.o $(OBJ)/error.o $(OBJ)/helper.o $(OBJ)/time.o $(OBJ)/timeError.o
+
 
 
 all:
-	flex -o src/lexer.cpp src/lexer.l  
-	bison -d --debug -o src/parser.tab.cpp src/parser.y  
-	g++ $(CXXFLAGS) -c -o obj/parser.tab.o src/parser.tab.cpp
-	g++ $(CXXFLAGS) -c -o obj/lexer.o src/lexer.cpp
-	g++ $(CXXFLAGS) -c -o obj/ast.o src/ast.cpp
-	g++ $(CXXFLAGS) -c -o obj/main.o src/main.cpp
-	g++ $(CXXFLAGS) -c -o obj/error.o src/error.cpp
-	g++ $(CXXFLAGS) -c -o obj/helper.o src/helper.cpp
-	g++ $(CXXFLAGS) -c -o obj/time.o  src/time.cpp
-	g++ $(CXXFLAGS) -c -o obj/timeError.o src/timeError.cpp
+	flex -o $(LEXER)/lexer.cpp $(LEXER)/lexer.l  
+	bison -d --debug -o $(PARSER)/parser.tab.cpp $(PARSER)/parser.y  
+	g++ $(CXXFLAGS) -c -o $(OBJ)/parser.tab.o $(PARSER)/parser.tab.cpp
+	g++ $(CXXFLAGS) -c -o $(OBJ)/lexer.o $(LEXER)/lexer.cpp
+	g++ $(CXXFLAGS) -c -o $(OBJ)/ast.o $(AST)/ast.cpp
+	g++ $(CXXFLAGS) -c -o $(OBJ)/main.o $(MAIN)/main.cpp
+	g++ $(CXXFLAGS) -c -o $(OBJ)/error.o $(ERROR)/error.cpp
+	g++ $(CXXFLAGS) -c -o $(OBJ)/helper.o $(HELPER)/helper.cpp
+	g++ $(CXXFLAGS) -c -o $(OBJ)/time.o  $(TIME)/time.cpp
+	g++ $(CXXFLAGS) -c -o $(OBJ)/timeError.o $(TIME)/timeError.cpp
 
-	g++ $(CXXFLAGS) -o w obj/parser.tab.o obj/lexer.o obj/ast.o obj/main.o obj/error.o obj/helper.o obj/time.o obj/timeError.o
+	g++ $(CXXFLAGS) -o w $(OBJ_FILES)
 
-
-run2: all2
-	./w workout.txt
 
 
 run: all
-	./w workout.txt
+	./w test.txt
