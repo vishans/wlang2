@@ -26,6 +26,8 @@ std::map<std::string, std::string> aliasToNameMap;
 std::map<std::string, std::string> nameToTypeMap = *new std::map<std::string, std::string>();
 std::map<std::string, std::string> nameToDefaultMap;
 
+std::map<std::string, std::string> constNameToValue;
+
 void initializeMaps() {
     nameToTypeMap.insert({"REST", "time"});
 }
@@ -60,7 +62,7 @@ extern char *yytext;
 %token <str> FLOAT_LITERAL
 %token <str> BOOLEAN_LITERAL
 %token <str> TIME_LITERAL
-%token WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS FAIL
+%token WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS FAIL CONST
 %token STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE
 
 %type <exercise> exercise
@@ -136,6 +138,10 @@ field_def:
 
         nameToDefaultMap[$2] = $6->first;
     }
+    | CONST IDENTIFIER field_value {
+        constNameToValue[$2] = $3->first;
+    }
+
     ;
 
 field_type:

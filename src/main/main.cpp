@@ -45,6 +45,11 @@ int main(int argc, char **argv) {
             for(const auto &pair : nameToTypeMap){
                 std::cout << "Name " << pair.first << " ,Type " << pair.second << std::endl;
             }
+
+            std::cout << std::endl;
+            for(const auto &pair : constNameToValue){
+                std::cout << "Constant " << pair.first << " ,Value " << pair.second << std::endl;
+            }
         } else {
             std::cerr << "No workout data was parsed." << std::endl;
         }

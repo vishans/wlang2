@@ -33,6 +33,7 @@ int line_number = 1;
 "time"              { return TIME_TYPE; }
 "boolean"           { return BOOLEAN_TYPE; }
 "fail"              { return FAIL; }
+"const"             { return CONST; }
 "true"|"false"      { yylval.str = strdup(yytext); return BOOLEAN_LITERAL; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.str = strdup(yytext); return IDENTIFIER; }
 \"[^\"]*\"          { yylval.str = strdup(yytext); return STRING; }
