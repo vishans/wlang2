@@ -440,10 +440,13 @@ set_detail:
 
         fields.insert({"REST", std::make_pair<std::string, std::string>(std::to_string(time.convertIntoSeconds()), "time")});
 
-        tempRD.push_back(new RepDetail(-1, fields, 
-        "rest" + *new std::string($2), line_number));
+       // I do not think anythink depends on the RepDetail vector of a REST set
+       // I am leaving this here for now; will clean up later
+       // tempRD.push_back(new RepDetail(-1, fields, 
+       // "rest" + *new std::string($2), line_number));
 
-        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2), line_number) ;
+        // Directly adding the rest time attribute to the customFields of SetDetail
+        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2), line_number, fields) ;
                             }
     ;
 
