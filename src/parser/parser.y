@@ -195,8 +195,19 @@ workout:
     ;
 
 exercise_list:
-    exercise_list exercise { $$ = $1; $1->addExercise($2); }
-    | exercise { $$ = new ExerciseList(); $$->addExercise($1); }
+    exercise_list exercise { 
+        
+        $$ = $1; 
+        if($2->sets != -2)
+            $1->addExercise($2); 
+        
+    }
+    | exercise { 
+        $$ = new ExerciseList(); 
+        if($1->sets != -2)
+            $$->addExercise($1);
+
+    }
     ;
 
 exercise:
@@ -269,6 +280,29 @@ exercise:
             line_number
         ); 
     }
+    | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL custom_fields '{' FAIL '}' { 
+        $$ = new Exercise(
+            "FAIL",                // Convert name to std::string
+            -2,                  // Convert sets to int
+            -2,               // Convert reps to int
+            *new std::vector<SetDetail*>(),
+            *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
+            "sets"+ *new std::string($4),
+            line_number
+        ); 
+    }
+    | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL '{' FAIL '}' { 
+         $$ = new Exercise(
+            "FAIL",                // Convert name to std::string
+            -2,                  // Convert sets to int
+            -2,               // Convert reps to int
+            *new std::vector<SetDetail*>(),
+            *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
+            "sets"+ *new std::string($4),
+            line_number
+        ); 
+       
+    }
     | REST TIME_LITERAL { 
         Time time;
         
@@ -307,8 +341,8 @@ exercise:
                                 line_number
                                 ); 
                                 
-                                }
-    ;
+                                };
+    
 
 set_details:
     set_details_without_fail { $$ = $1 };
