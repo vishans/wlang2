@@ -141,9 +141,9 @@ void SetDetail::tally(){
             }
             prev = rep->repNumber;
         }
-        else{
-            std::cout<< "SKIPPED REST" <<std::endl;
-        }
+        // else{
+        //     std::cout<< "SKIPPED REST" <<std::endl;
+        // }
     }
 }
 
@@ -570,6 +570,14 @@ Workout::~Workout() {
 // Function to print the workout details
 void Workout::printWorkout() const {
     for (Exercise* exercise : exerciseList->exercises) {
+
+        if(exercise->sets == -1){
+            // REST
+            cout << "REST " << exercise->customFields["REST"].first << "s" << endl << endl;
+            continue;
+        }
+
+
         cout << "Exercise: " << exercise->name
              << ", Sets: " << exercise->sets
              << ", Reps: " << exercise->reps;
@@ -590,11 +598,21 @@ void Workout::printWorkout() const {
 
         // Print details of each set
         for (SetDetail* setDetail : exercise->setDetails) {
+
+            if(setDetail->setNumber == -1){
+                // REST
+                cout << "    REST " << setDetail->customFields["REST"].first << "s" << endl;
+               
+                continue;
+            }
+
+
+
             cout << "  Set " << setDetail->setNumber;
             
-            for (const auto& field : setDetail->customFields) {
-            cout << ", " << field.first << ": " << field.second.first << "," << field.second.second;
-            }
+            // for (const auto& field : setDetail->customFields) {
+            // cout << ", " << field.first << ": " << field.second.first << "," << field.second.second;
+            // }
 
             std::cout << " " << std::endl;
            
@@ -614,5 +632,7 @@ void Workout::printWorkout() const {
                 cout << endl;
             }
         }
+
+        cout << endl;
     }
 }
