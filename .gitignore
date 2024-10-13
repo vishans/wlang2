@@ -1,6 +1,7 @@
 lexer.cpp
 parser.tab.*
 *.txt
+*.w
 obj/
 w
 .vscode/
