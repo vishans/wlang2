@@ -14,6 +14,7 @@
 #include "../helper/helper.h"
 #include "../time/time.h"
 #include "../time/timeError.h"
+#include "../errorMessage/errorMessage.h"
 
 // Declare external lexer function and necessary variables
 extern int yylex();
@@ -27,6 +28,7 @@ std::map<std::string, std::string> nameToTypeMap = *new std::map<std::string, st
 std::map<std::string, std::string> nameToDefaultMap;
 
 std::map<std::string, std::string> constNameToValue;
+
 
 void initializeMaps() {
     nameToTypeMap.insert({"REST", "time"});
@@ -584,8 +586,13 @@ field_value_pair:
 */
 
 void yyerror(const char *s) {
+    initializeErrorMessageMap();
+
     extern int yylineno; // Defined and maintained by Bison to track line numbers
     extern char *yytext; // The text of the current token
+
     std::cerr << "Syntax error at line " << line_number << ": " << s << std::endl;
     std::cerr << "Unexpected token: '" << yytext << "'" << std::endl;
+    std::string errorMessage = unexpectedToken2ErrorMessage[yytext];
+    std::cout << errorMessage << std::endl;
 }
