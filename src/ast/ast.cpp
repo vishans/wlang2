@@ -5,6 +5,7 @@
 #include "../error/error.h"
 #include "../helper/helper.h"
 #include <algorithm>
+#include <map>
 
 
 using namespace std;
@@ -635,4 +636,161 @@ void Workout::printWorkout() const {
 
         cout << endl;
     }
+}
+
+string Workout::csv() const {
+
+    map<string, vector<string> > columnToValues;
+
+    vector<string> columnNames = {"exercise_id","set_id","rep_id","exercise_name"};
+
+    // Mandatory Fields, as specified just above in columnNames
+    for(auto& columnName: columnNames){
+        columnToValues[columnName] = *new vector<string>();
+    }
+
+    // Custom Fields
+    for(auto& nameTypePair: nameToTypeMap){
+        columnToValues[nameTypePair.first] = *new vector<string>();
+    }
+
+    // Constants
+    for(auto& nameValuePair: constNameToValue){
+        columnToValues[nameValuePair.first] = *new vector<string>();
+    }
+
+
+
+    int exerciseId = 0;
+
+    for (Exercise* exercise : exerciseList->exercises) {
+        exerciseId++;
+
+
+        // REST
+        if(exercise->sets == -1){
+
+            for(auto& columnValuesPair : columnToValues){
+                auto& [column, values] = columnValuesPair;
+                values.push_back("");
+
+            }
+
+            columnToValues["REST"].at(columnToValues["REST"].size()-1) = exercise->customFields["REST"].first;
+            columnToValues["exercise_name"].at(columnToValues["exercise_name"].size()-1) = "REST";
+
+            columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) = "-1";
+            columnToValues["set_id"].at(columnToValues["set_id"].size()-1) = "-1";
+            columnToValues["exercise_id"].at(columnToValues["exercise_id"].size()-1) = "-1";
+
+            for(auto& nameToValuePair: constNameToValue){
+                columnToValues[nameToValuePair.first].at(columnToValues[nameToValuePair.first].size()-1) = nameToValuePair.second;
+            }
+
+            continue;
+        }
+
+
+        
+        exercise->tally();
+        exercise->expand();
+
+        exercise->inheritGlobalFields();
+        exercise->passDownRepNumberToSets();
+        exercise->passDownFieldsToSets();
+
+       
+        for (SetDetail* setDetail : exercise->setDetails) {
+
+            // REST
+            if(setDetail->setNumber == -1){
+
+
+                for(auto& columnValuesPair : columnToValues){
+                    auto& [column, values] = columnValuesPair;
+                    values.push_back("");
+
+                }
+
+                columnToValues["REST"].at(columnToValues["REST"].size()-1) = setDetail->customFields["REST"].first;
+                columnToValues["exercise_name"].at(columnToValues["exercise_name"].size()-1) = "REST";
+
+                columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) = "-1";
+                columnToValues["set_id"].at(columnToValues["set_id"].size()-1) = "-1";
+                columnToValues["exercise_id"].at(columnToValues["exercise_id"].size()-1) = "-1";
+
+                for(auto& nameToValuePair: constNameToValue){
+                    columnToValues[nameToValuePair.first].at(columnToValues[nameToValuePair.first].size()-1) = nameToValuePair.second;
+                }
+
+
+                continue;
+
+            }
+
+
+            setDetail->tally();
+            setDetail->passDownFieldsToReps();
+            setDetail->expand2();
+           
+            for (RepDetail* repDetail : setDetail->repDetails)
+            {
+
+                // Populating fields that this rep has
+                for(auto& [columnName, values] : columnToValues){
+
+                    if(repDetail->customFields.find(columnName) != repDetail->customFields.end()){
+                        values.push_back(repDetail->customFields[columnName].first);
+                    }
+                    else{
+                        values.push_back("");
+                    }
+
+                }
+
+
+                columnToValues["exercise_name"].at(columnToValues["exercise_name"].size()-1) = exercise->name;
+
+                columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) =( exercise->name == "REST") ? "-1" : to_string(repDetail->repNumber);
+                columnToValues["set_id"].at(columnToValues["set_id"].size()-1) = to_string(setDetail->setNumber);
+                columnToValues["exercise_id"].at(columnToValues["exercise_id"].size()-1) = to_string(exerciseId);
+
+                for(auto& nameToValuePair: constNameToValue){
+                    columnToValues[nameToValuePair.first].at(columnToValues[nameToValuePair.first].size()-1) = nameToValuePair.second;
+                }
+            }
+        }
+
+    }
+
+    string result;
+    int n = columnToValues["rep_id"].size();
+
+    // Create row names ie rep_id,set_id etc...
+    for(auto it = columnToValues.begin(); it != columnToValues.end(); it++){
+        result += it->first;
+
+        if(next(it) != columnToValues.end()){
+            result += ",";
+        }
+    }
+   
+    string row;
+    for(int i = 0 ; i < n; i++){
+        row = "";
+
+        for(auto it = columnToValues.begin(); it != columnToValues.end(); it++){
+            row += it->second.at(i) ;
+
+            if(next(it) != columnToValues.end()){
+                row += ",";
+            }
+        }
+
+
+        result += '\n' + row;
+        
+    }
+    
+    return result;
 }

@@ -183,6 +183,8 @@ public:
      * Function to print the workout details
      */
     void printWorkout() const;
+
+    std::string csv() const;
 };
 
 #endif // AST_H
