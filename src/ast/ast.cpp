@@ -674,6 +674,7 @@ string Workout::csv() const {
 
         // REST
         if(exercise->sets == -1){
+            exerciseId--;
 
             for(auto& columnValuesPair : columnToValues){
                 auto& [column, values] = columnValuesPair;
@@ -768,7 +769,7 @@ string Workout::csv() const {
                     continue;
                     
                 }
-
+                
                 // Populating fields that this rep has
                 for(auto& [columnName, values] : columnToValues){
 
@@ -784,7 +785,7 @@ string Workout::csv() const {
 
                 columnToValues["exercise_name"].at(columnToValues["exercise_name"].size()-1) = exercise->name;
 
-                columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) = exercise->name == to_string(repDetail->repNumber);
+                columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) = to_string(repDetail->repNumber);
                 columnToValues["set_id"].at(columnToValues["set_id"].size()-1) = to_string(setDetail->setNumber);
                 columnToValues["exercise_id"].at(columnToValues["exercise_id"].size()-1) = to_string(exerciseId);
 
@@ -797,7 +798,7 @@ string Workout::csv() const {
     }
 
     string result;
-    int n = columnToValues["rep_id"].size();
+    int n = columnToValues["set_id"].size();
 
     // Create row names ie rep_id,set_id etc...
     for(auto it = columnToValues.begin(); it != columnToValues.end(); it++){
