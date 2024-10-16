@@ -602,7 +602,7 @@ void Workout::printWorkout() const {
 
             if(setDetail->setNumber == -1){
                 // REST
-                cout << "    REST " << setDetail->customFields["REST"].first << "s" << endl;
+                cout << "  REST " << setDetail->customFields["REST"].first << "s" << endl;
                
                 continue;
             }
@@ -621,9 +621,14 @@ void Workout::printWorkout() const {
             setDetail->passDownFieldsToReps();
             setDetail->expand2();
            
-            for (RepDetail* repDetail : setDetail->repDetails)
-            //for (RepDetail* repDetail : setDetail->expand()) 
-             {
+            for (RepDetail* repDetail : setDetail->repDetails) 
+            {
+                // Rest
+                if(repDetail->repNumber == -1){
+                    cout << "    REST " << repDetail->customFields["REST"].first << "s" << endl;
+                    continue;
+                }
+
                 cout << "    Rep " << repDetail->repNumber;
 
                 // Print custom fields for each rep
@@ -735,6 +740,34 @@ string Workout::csv() const {
            
             for (RepDetail* repDetail : setDetail->repDetails)
             {
+                // REST
+                if(repDetail->repNumber == -1){
+
+                    for(auto& [columnName, values] : columnToValues){
+
+                        values.push_back("");
+
+                    }
+
+                    columnToValues["REST"].at(columnToValues["REST"].size()-1) =repDetail->customFields["REST"].first;
+
+                    columnToValues["exercise_name"].at(columnToValues["exercise_name"].size()-1) = "REST";
+
+                    columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) ="-1";
+
+                    columnToValues["set_id"].at(columnToValues["set_id"].size()-1) = "-1";
+
+                    columnToValues["exercise_id"].at(columnToValues["exercise_id"].size()-1) = "-1";
+
+
+                    // Add constant fields to rep
+                    for(auto& nameToValuePair: constNameToValue){
+                        columnToValues[nameToValuePair.first].at(columnToValues[nameToValuePair.first].size()-1) = nameToValuePair.second;
+                    }          
+
+                    continue;
+                    
+                }
 
                 // Populating fields that this rep has
                 for(auto& [columnName, values] : columnToValues){
@@ -751,7 +784,7 @@ string Workout::csv() const {
 
                 columnToValues["exercise_name"].at(columnToValues["exercise_name"].size()-1) = exercise->name;
 
-                columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) =( exercise->name == "REST") ? "-1" : to_string(repDetail->repNumber);
+                columnToValues["rep_id"].at(columnToValues["rep_id"].size()-1) = exercise->name == to_string(repDetail->repNumber);
                 columnToValues["set_id"].at(columnToValues["set_id"].size()-1) = to_string(setDetail->setNumber);
                 columnToValues["exercise_id"].at(columnToValues["exercise_id"].size()-1) = to_string(exerciseId);
 

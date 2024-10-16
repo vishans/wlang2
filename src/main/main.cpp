@@ -37,14 +37,15 @@ int main(int argc, char **argv) {
         // If parsing succeeds, print the parsed workout details
         if (parsedWorkout) {
             parsedWorkout->printWorkout();
+            // std::cout << parsedWorkout->csv();
 
             // Show constants
-            if(!constNameToValue.empty()){
-                std::cout << std::endl << "Constants: " << std::endl;
-                for(const auto &pair : constNameToValue){
-                    std::cout << "    "  << pair.first <<  " = " << pair.second << std::endl;
-                }
-            }
+            // if(!constNameToValue.empty()){
+            //     std::cout << std::endl << "Constants: " << std::endl;
+            //     for(const auto &pair : constNameToValue){
+            //         std::cout << "    "  << pair.first <<  " = " << pair.second << std::endl;
+            //     }
+            // }
         } else {
             std::cerr << "No workout data was parsed." << std::endl;
         }
