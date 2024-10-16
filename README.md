@@ -148,7 +148,7 @@ REST,date,exercise_id,exercise_name,perceived_difficulty,rep_id,set_id,weight
 
 ## --print Option
 
-When the --print option is used, the output is printed directly to the standard output instead of generating a CSV file.
+When the `--print` option is used, the output is printed directly to the standard output instead of generating a CSV file.
 
 Generated output for the example above:
 
