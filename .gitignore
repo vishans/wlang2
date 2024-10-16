@@ -6,3 +6,5 @@ obj/
 w
 .vscode/
 *.csv
+*.exe
+.DS_Store
