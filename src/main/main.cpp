@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 
     if (version) {
     // Print version and exit
-        std::cout << "W Compiler Version 1.0" << std::endl;
+        std::cout << "W Compiler Version 1.0.1" << std::endl;
         return 0;
     }
 
