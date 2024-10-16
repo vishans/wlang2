@@ -610,11 +610,6 @@ void Workout::printWorkout() const {
 
 
             cout << "  Set " << setDetail->setNumber;
-            
-            // for (const auto& field : setDetail->customFields) {
-            // cout << ", " << field.first << ": " << field.second.first << "," << field.second.second;
-            // }
-
             std::cout << " " << std::endl;
            
             setDetail->tally();
@@ -633,7 +628,7 @@ void Workout::printWorkout() const {
 
                 // Print custom fields for each rep
                 for (const auto& field : repDetail->customFields) {
-                    cout << ", " << field.first << ": " << field.second.first << "," << field.second.second;
+                    cout << ", " << field.first << ": [ " << field.second.first << ", " << field.second.second << " ]";
                 }
                 cout << endl;
             }
