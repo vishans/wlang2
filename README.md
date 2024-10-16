@@ -1,8 +1,8 @@
-# 🏋️ The W Language
+# The W Language
 
 The **W Language**, is a domain-specific language (DSL) designed to define and track workout routines. With the ability to define exercises, sets, reps, and custom fields, W Language aims to be a powerful tool for fitness enthusiasts and developers alike. 
 
-## 🌟 Key Features
+## Key Features
 
 - **Structure and Organize Your Workouts**: Transform your fitness routine into a well-organized plan! With W Language, you can effortlessly define exercises, sets, and reps, creating a clear structure for every workout. Whether you're planning a simple routine or a complex regimen, W Language makes it easy to keep everything in order.
 
@@ -12,14 +12,14 @@ The **W Language**, is a domain-specific language (DSL) designed to define and t
 
 - **Perfect for Journaling Enthusiasts**: Keep a comprehensive and detailed record of your workouts. W Language is perfect for fitness enthusiasts who love to journal their progress. It provides a clear, organized format to log every session, helping you stay on track, reflect on your journey, and celebrate your achievements.
 
-## 🔥 Why C++?
+## Why C++?
 
 The original prototype of the W Language, built in 2022, was developed entirely in Python, including its lexer and parser. However, I have now transitioned to C++ for a **major overhaul**. This move is driven by the need for:
 
 - **Performance Improvements**: C++ offers enhanced speed and efficiency, essential for processing complex workout routines quickly and effectively.
 - **Scalability**: With C++, the W Language can handle more complex parsing tasks and larger datasets, preparing for future enhancements.
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 - **C++**: The main language used for implementing the parser and interpreter.
 - **Bison**: A powerful parser generator for defining the grammar and creating the parser.
@@ -53,7 +53,7 @@ The `W` Compiler allows you to compile `.w` files with various options to custom
 
 
 
-## 📜 Example of W Language Syntax
+## Example of W Language Syntax
 
 Here's a sneak peek at how you can define a workout using W Language:
 
