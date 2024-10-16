@@ -1,11 +1,6 @@
-# 🏋️ W Language
+# 🏋️ The W Language
 
 The **W Language**, is a domain-specific language (DSL) designed to define and track workout routines. With the ability to define exercises, sets, reps, and custom fields, W Language aims to be a powerful tool for fitness enthusiasts and developers alike. 
-
-## 🚧 Development Status
-
-**Currently in active development!** 🚀 I am building out the features and continuously improving the syntax. As this project evolves, expect changes and new capabilities to be introduced. <br>
-⚠️ **This project is still in its embryonic stage and is not yet ready for production.** ⚠️
 
 ## 🌟 Key Features
 
@@ -29,7 +24,6 @@ The original prototype of the W Language, built in 2022, was developed entirely 
 - **C++**: The main language used for implementing the parser and interpreter.
 - **Bison**: A powerful parser generator for defining the grammar and creating the parser.
 - **Flex**: A lexical analyzer generator for tokenizing the input.
-- **Custom C++ AST**: Abstract Syntax Tree (AST) for representing the parsed structure of the DSL.
 
 ## 📜 Example of W Language Syntax
 
@@ -41,10 +35,13 @@ Here's a sneak peek at how you can define a workout using W Language:
 
 /*
 Lower Body Workout 
-September 10, 2024
+October 16, 2024
 */
 
 field weight type float default 0 as w // 'w' is an alias for weight
+field perceived_difficulty type integer default 5 as pd // Scale of 1 to 10 where 5 is like average
+
+const date "16/10/2024" // a const is appended to every row
 
 workout {
     exercise "squats" sets 3 reps 10 weight 100 {
@@ -54,16 +51,18 @@ workout {
             rest 1m
             reps 7-10 w 69.69
         }
+
         rest 2m30s
 
         set 2 {
-            rep 8 w 90
+            reps 1-8 w 90
+            rep 9 w 90 pd 9 // Found this rep difficult to execute
             fail
         }
 
         rest 2m30s
 
-        set 3 {
+        set 3 pd 7{ // Found the third set more challenging 7/10
             rep 1 w 80
             reps 2-10 w 69
         }
