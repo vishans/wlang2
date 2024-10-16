@@ -1,4 +1,7 @@
-CXXFLAGS = -std=c++11 -Wall -Wextra -static
+CXXFLAGS = -std=c++11 -Wall -Wextra 
+
+# Windows-specific CXXFLAGS (with -static)
+WINDOWS_CXXFLAGS = -std=c++11 -Wall -Wextra -static
 
 SRC = src
 OBJ = obj
@@ -41,19 +44,24 @@ all:
 windows:
 	flex -o $(LEXER)/lexer.cpp $(LEXER)/lexer.l  
 	bison -d --debug -o $(PARSER)/parser.tab.cpp $(PARSER)/parser.y  
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/parser.tab.o $(PARSER)/parser.tab.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/lexer.o $(LEXER)/lexer.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/ast.o $(AST)/ast.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/main.o $(MAIN)/main.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/error.o $(ERROR)/error.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/helper.o $(HELPER)/helper.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/time.o  $(TIME)/time.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/timeError.o $(TIME)/timeError.cpp
-	$(WINDOWS_CXX) $(CXXFLAGS) -c -o $(OBJ)/errorMessage.o $(ERRORMSG)/errorMessage.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/parser.tab.o $(PARSER)/parser.tab.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/lexer.o $(LEXER)/lexer.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/ast.o $(AST)/ast.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/main.o $(MAIN)/main.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/error.o $(ERROR)/error.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/helper.o $(HELPER)/helper.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/time.o  $(TIME)/time.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/timeError.o $(TIME)/timeError.cpp
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/errorMessage.o $(ERRORMSG)/errorMessage.cpp
 
 	$(WINDOWS_CXX) $(CXXFLAGS) -o w.exe $(OBJ_FILES)
 
 
+# Clean up object files and executables # w w.exe
+clean:
+	rm -f $(OBJ)/*.o 
+
+
 
 run: all
-	./w meg.w
+	./w meg.w -p
