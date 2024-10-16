@@ -25,6 +25,34 @@ The original prototype of the W Language, built in 2022, was developed entirely 
 - **Bison**: A powerful parser generator for defining the grammar and creating the parser.
 - **Flex**: A lexical analyzer generator for tokenizing the input.
 
+## W Compiler Usage
+
+The `W` Compiler allows you to compile `.w` files with various options to customize the output. Below are the available options:
+
+**Usage**:  
+
+
+- `file` - The `.w` file you wish to compile.
+
+### Options:
+- `-h, --help`  
+  Prints this help message and exits.
+  
+- `-p, --print`  
+  Outputs the result to the standard output instead of a CSV file.
+  
+- `-c, --csv`  
+  Generates CSV output. This is enabled by default.
+  
+- `-o, --output <path>`  
+  Specifies the name or path of the output CSV file.
+  
+- `-v, --version`  
+  Prints the compiler version and exits.
+
+
+
+
 ## 📜 Example of W Language Syntax
 
 Here's a sneak peek at how you can define a workout using W Language:
