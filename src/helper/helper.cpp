@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-char **args; // Arguments given to main; Needed for filepath
+std::string fp; // Filepath given to main; parsed by cli11
 
 /*
 Flex seems to consume newlines very greedily which lead to my line_number counter or even
@@ -19,7 +19,6 @@ For e.g "reps 1 - 7"          -> "reps1-7"
 
 */
 int getActualLineNumber(int lineNumber, std::string keyword){
-    std::string fp = args[1];
     std::ifstream file(fp);
 
     if(!file.is_open()){

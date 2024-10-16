@@ -3,7 +3,7 @@
 
 #include <string>
 
-extern char **args;
+extern std::string fp;
 int getActualLineNumber(int lineNumber ,std::string keyword);
 
 #endif
