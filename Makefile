@@ -54,7 +54,7 @@ windows:
 	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/timeError.o $(TIME)/timeError.cpp
 	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -c -o $(OBJ)/errorMessage.o $(ERRORMSG)/errorMessage.cpp
 
-	$(WINDOWS_CXX) $(CXXFLAGS) -o w.exe $(OBJ_FILES)
+	$(WINDOWS_CXX) $(WINDOWS_CXXFLAGS) -o w.exe $(OBJ_FILES)
 
 
 # Clean up object files and executables # w w.exe
