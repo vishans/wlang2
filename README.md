@@ -12,12 +12,6 @@ The **W Language**, is a domain-specific language (DSL) designed to define and t
 
 - **Perfect for Journaling Enthusiasts**: Keep a comprehensive and detailed record of your workouts. W Language is perfect for fitness enthusiasts who love to journal their progress. It provides a clear, organized format to log every session, helping you stay on track, reflect on your journey, and celebrate your achievements.
 
-## Why C++?
-
-The original prototype of the W Language, built in 2022, was developed entirely in Python, including its lexer and parser. However, I have now transitioned to C++ for a **major overhaul**. This move is driven by the need for:
-
-- **Performance Improvements**: C++ offers enhanced speed and efficiency, essential for processing complex workout routines quickly and effectively.
-- **Scalability**: With C++, the W Language can handle more complex parsing tasks and larger datasets, preparing for future enhancements.
 
 ## Technologies Used
 
