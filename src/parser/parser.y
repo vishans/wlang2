@@ -55,17 +55,24 @@ extern char *yytext;
     std::pair<std::string, std::string> *value; // Type for field_value + type
     std::map<std::string, std::pair<std::string, std::string> > *fieldValuePair; // Type for field value pair with type
                                                         // field (string) -> value, type (both strings)
+
+    // Structure to include string and line information
+    struct {
+        char *str; // Token value if any, or nullptr for keywords/symbols
+        int line;  // Line number where the token was found
+    } token_info;
+
 }
 
 // Token declarations
-%token <str> STRING
-%token <str> IDENTIFIER
-%token <str> INTEGER_LITERAL
-%token <str> FLOAT_LITERAL
-%token <str> BOOLEAN_LITERAL
-%token <str> TIME_LITERAL
-%token WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS FAIL CONST
-%token STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE
+%token <token_info> STRING
+%token <token_info> IDENTIFIER
+%token <token_info> INTEGER_LITERAL
+%token <token_info> FLOAT_LITERAL
+%token <token_info> BOOLEAN_LITERAL
+%token <token_info> TIME_LITERAL
+%token <token_info> WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS FAIL CONST
+%token <token_info> STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE
 
 %type <exercise> exercise
 %type <workout> workout
