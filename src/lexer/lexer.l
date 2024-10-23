@@ -124,7 +124,7 @@ int line_number = 1;
     return CONST; 
 }
 
-"true" | "false" { 
+"true"|"false" { 
     yylval.token_info.str = strdup(yytext); 
     yylval.token_info.line = line_number; 
     return BOOLEAN_LITERAL; 
@@ -194,11 +194,19 @@ int line_number = 1;
 }
 
 "//".* { 
-    /* Ignore line comment */ 
+  // Ignore line comment
 }
 
 "/*"([^*]|[\r\n]|"*"[^/])*"*/" { 
-    /* Ignore block comment */ 
+     // Count newlines inside block comments
+   std::cout << yytext << std::endl;
+    for (char *c = yytext; *c; ++c) {
+        // std::cout << "c is: " << *c << std::endl;
+        if (*c == '\n') {
+            ++line_number;
+            std::cout << "\t Incremented" << std::endl;
+        }
+    } 
 }
 
 %%
