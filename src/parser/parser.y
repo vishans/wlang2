@@ -107,14 +107,14 @@ field_declarations:
 
 field_def:
     FIELD IDENTIFIER TYPE field_type DEFAULT field_value AS IDENTIFIER { 
-        aliasToNameMap[$8] = $2;
-        nameToTypeMap[$2] = *$4;
+        aliasToNameMap[$8.str] = $2.str;
+        nameToTypeMap[$2.str] = *$4;
 
         if(*$4 != $6->second){
 
             if(!(*$4 == "float" && $6->second == "integer")){
 
-                std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
+                std::string message = "The field '" + std::string($2.str) + "' was given the wrong type." +
                 "\n" + 
                 " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
@@ -124,16 +124,16 @@ field_def:
             }
 
         }
-        nameToDefaultMap[$2] = $6->first;
+        nameToDefaultMap[$2.str] = $6->first;
     }
     | FIELD IDENTIFIER TYPE field_type DEFAULT field_value { 
-        nameToTypeMap[$2] = *$4;
+        nameToTypeMap[$2.str] = *$4;
 
         if(*$4 != $6->second){
 
             if(!(*$4 == "float" && $6->second == "integer")){
 
-                std::string message = "The field '" + std::string($2) + "' was given the wrong type." +
+                std::string message = "The field '" + std::string($2.str) + "' was given the wrong type." +
                 "\n" + 
                 " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
@@ -145,10 +145,10 @@ field_def:
 
         }
 
-        nameToDefaultMap[$2] = $6->first;
+        nameToDefaultMap[$2.str] = $6->first;
     }
     | CONST IDENTIFIER field_value {
-        constNameToValue[$2] = $3->first;
+        constNameToValue[$2.str] = $3->first;
     }
 
     ;
@@ -162,31 +162,31 @@ field_type:
     ;
 
 field_value:
-    STRING { $$ = new std::pair<std::string, std::string>(*new std::string($1), "string"); }
-    | INTEGER_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "integer"); }
-    | FLOAT_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1), "float"); }
-    | BOOLEAN_LITERAL{ $$ = new std::pair<std::string, std::string>(*new std::string($1), "boolean"); }
+    STRING { $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "string"); }
+    | INTEGER_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "integer"); }
+    | FLOAT_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "float"); }
+    | BOOLEAN_LITERAL{ $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "boolean"); }
     | TIME_LITERAL { 
 
      Time time;
 
      try {
-            time = *new Time(*new std::string($1));
+            time = *new Time(*new std::string($1.str));
      }
      catch (const InvalidHour& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1.str));
         printErrorMessage(correctLineNo, "Invalid Hour", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1.str));
         printErrorMessage(correctLineNo, "Invalid Minute", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1.str));
         printErrorMessage(correctLineNo, "Invalid Second", e.what());
         exit(EXIT_FAILURE);
 
@@ -220,12 +220,12 @@ exercise_list:
 exercise:
     EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL custom_fields '{' set_details '}' { 
         $$ = new Exercise(
-            std::string($2),                // Convert name to std::string
-            std::stoi($4),                  // Convert sets to int
-            std::stoi($6),                  // Convert reps to int
+            std::string($2.str),                // Convert name to std::string
+            std::stoi($4.str),                  // Convert sets to int
+            std::stoi($6.str),                  // Convert reps to int
             *$9,                             // setDetails
             *$7,                             // fields
-            "sets" + *new std::string($4),
+            "sets" + *new std::string($4.str),
             line_number
 
         ); 
@@ -233,57 +233,57 @@ exercise:
     |
     EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL '{' set_details '}' { 
         $$ = new Exercise(
-            std::string($2),                // Convert name to std::string
-            std::stoi($4),                  // Convert sets to int
-            std::stoi($6),                  // Convert reps to int
+            std::string($2.str),                // Convert name to std::string
+            std::stoi($4.str),                  // Convert sets to int
+            std::stoi($6.str),                  // Convert reps to int
             *$8,                             // setDetails
             *new std::map<std::string, std::pair<std::string, std::string> >(),                             // fields,
-            "sets" + *new std::string($4),
+            "sets" + *new std::string($4.str),
             line_number
 
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL custom_fields { 
         $$ = new Exercise(
-            std::string($2),                // Convert name to std::string
-            std::stoi($4),                  // Convert sets to int
-            std::stoi($6),               // Convert reps to int
+            std::string($2.str),                // Convert name to std::string
+            std::stoi($4.str),                  // Convert sets to int
+            std::stoi($6.str),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *$7,                         // fields
-            "sets"+ *new std::string($4),
+            "sets"+ *new std::string($4.str),
             line_number
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL { 
         $$ = new Exercise(
-            std::string($2),                // Convert name to std::string
-            std::stoi($4),                  // Convert sets to int
-            std::stoi($6),               // Convert reps to int
+            std::string($2.str),                // Convert name to std::string
+            std::stoi($4.str),                  // Convert sets to int
+            std::stoi($6.str),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
-            "sets"+ *new std::string($4),
+            "sets"+ *new std::string($4.str),
             line_number
         ); 
     }
      | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL custom_fields '{' '}' { 
         $$ = new Exercise(
-            std::string($2),                // Convert name to std::string
-            std::stoi($4),                  // Convert sets to int
-            std::stoi($6),               // Convert reps to int
+            std::string($2.str),                // Convert name to std::string
+            std::stoi($4.str),                  // Convert sets to int
+            std::stoi($6.str),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *$7,                         // fields
-            "sets"+ *new std::string($4),
+            "sets"+ *new std::string($4.str),
             line_number
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL '{' '}' { 
         $$ = new Exercise(
-            std::string($2),                // Convert name to std::string
-            std::stoi($4),                  // Convert sets to int
-            std::stoi($6),               // Convert reps to int
+            std::string($2.str),                // Convert name to std::string
+            std::stoi($4.str),                  // Convert sets to int
+            std::stoi($6.str),               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
-            "sets"+ *new std::string($4),
+            "sets"+ *new std::string($4.str),
             line_number
         ); 
     }
@@ -294,7 +294,7 @@ exercise:
             -2,               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
-            "sets"+ *new std::string($4),
+            "sets"+ *new std::string($4.str),
             line_number
         ); 
     }
@@ -305,7 +305,7 @@ exercise:
             -2,               // Convert reps to int
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
-            "sets"+ *new std::string($4),
+            "sets"+ *new std::string($4.str),
             line_number
         ); 
        
@@ -314,22 +314,22 @@ exercise:
         Time time;
         
         try{
-            time = *new Time(*new std::string($2));
+            time = *new Time(*new std::string($2.str));
         }
         catch (const InvalidHour& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Hour", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Minute", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = getActualLineNumber(line_number, std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Second", e.what());
             exit(EXIT_FAILURE);
 
@@ -376,7 +376,7 @@ set_details_without_fail:
     ;
 
 set_detail:
-    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2), *$4, "set"+ *new std::string($2), line_number); }
+    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2.str), *$4, "set"+ *new std::string($2.str), line_number); }
     |
 
     // custom fields
@@ -385,10 +385,10 @@ set_detail:
         combinedFields.insert($3->begin(), $3->end());
     
         
-        $$ = new SetDetail(std::stoi($2), *$5, "set"+ *new std::string($2), line_number, combinedFields); }
+        $$ = new SetDetail(std::stoi($2.str), *$5, "set"+ *new std::string($2.str), line_number, combinedFields); }
 
 
-    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2), line_number) }
+    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), line_number) }
 
     // custom fields
     | SET INTEGER_LITERAL custom_fields { 
@@ -397,12 +397,12 @@ set_detail:
         combinedFields.insert($3->begin(), $3->end());
     
 
-        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2), line_number, combinedFields);
+        $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), line_number, combinedFields);
         
     }
 
     
-    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2), line_number) }
+    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), line_number) }
 
     // custom_fields
     | SET INTEGER_LITERAL custom_fields '{' '}' { 
@@ -410,7 +410,7 @@ set_detail:
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($3->begin(), $3->end());
 
-        $$ = new SetDetail(std::stoi($2), *new std::vector<RepDetail*>(), "set"+ *new std::string($2), line_number, combinedFields); 
+        $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), line_number, combinedFields); 
         
         }
 
@@ -423,23 +423,23 @@ set_detail:
         Time time;
         
         try{
-            time = *new Time(*new std::string($2));
+            time = *new Time(*new std::string($2.str));
         
         }
         catch (const InvalidHour& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Hour", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Minute", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Second", e.what());
             exit(EXIT_FAILURE);
 
@@ -453,7 +453,7 @@ set_detail:
        // "rest" + *new std::string($2), line_number));
 
         // Directly adding the rest time attribute to the customFields of SetDetail
-        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2), line_number, fields) ;
+        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2.str), line_number, fields) ;
                             }
     ;
 
@@ -493,9 +493,9 @@ rep_details_without_fail:
 rep_detail:
     REP INTEGER_LITERAL {
         $$ = new RepDetail(
-            std::stoi($2), // Rep number
+            std::stoi($2.str), // Rep number
             *new std::map<std::string, std::pair<std::string, std::string> >(), // Empty custom fields
-            "rep" + std::string($2),
+            "rep" + std::string($2.str),
             line_number
         );
     }
@@ -503,9 +503,9 @@ rep_detail:
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($3->begin(), $3->end());
         $$ = new RepDetail(
-            std::stoi($2), // Rep number
+            std::stoi($2.str), // Rep number
             combinedFields, // Custom fields
-           "rep" + std::string($2),
+           "rep" + std::string($2.str),
            line_number
         );
     }
@@ -514,23 +514,23 @@ rep_detail:
         Time time;
 
         try{
-            time = *new Time(*new std::string($2));
+            time = *new Time(*new std::string($2.str));
         
         }
         catch (const InvalidHour& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Hour", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Minute", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2));
+            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
             printErrorMessage(correctLineNo, "Invalid Second", e.what());
             exit(EXIT_FAILURE);
 
@@ -543,7 +543,7 @@ rep_detail:
         $$ = new RepDetail(
             -1, // Rep number
             combinedFields, // Custom fields
-           "rep" + std::string($2),
+           "rep" + std::string($2.str),
            line_number
         );
     }
@@ -552,11 +552,11 @@ rep_detail:
 rep_range:
     REPS INTEGER_LITERAL '-' INTEGER_LITERAL {
         $$ = new std::vector<RepDetail*>();
-        for (int i = std::stoi($2); i <= std::stoi($4); ++i) {
+        for (int i = std::stoi($2.str); i <= std::stoi($4.str); ++i) {
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 *new std::map<std::string, std::pair<std::string,std::string> >(), // Empty custom fields
-                "reps" + std::string($2) + "-" + std::string($4),
+                "reps" + std::string($2.str) + "-" + std::string($4.str),
                 line_number
                 
             ));
@@ -566,11 +566,11 @@ rep_range:
         $$ = new std::vector<RepDetail*>();
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($5->begin(), $5->end());
-        for (int i = std::stoi($2); i <= std::stoi($4); ++i) {
+        for (int i = std::stoi($2.str); i <= std::stoi($4.str); ++i) {
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 combinedFields, // Custom fields
-                "reps" + std::string($2) + "-" + std::string($4),
+                "reps" + std::string($2.str) + "-" + std::string($4.str),
                 line_number
 
             ));
@@ -586,27 +586,27 @@ custom_fields:
 field_value_pair:
     IDENTIFIER STRING { 
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
-        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("string"))));
+        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("string"))));
         $$ = m;
     }
     | IDENTIFIER INTEGER_LITERAL { 
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
         
-        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("integer"))));
+        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("integer"))));
 
         $$ = m;
     }
     | IDENTIFIER FLOAT_LITERAL { 
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
 
-        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("float"))));
+        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("float"))));
 
         $$ = m;
     }
     | IDENTIFIER BOOLEAN_LITERAL { 
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
 
-        m->insert(std::make_pair($1, std::make_pair($2,*new std::string("boolean"))));
+        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("boolean"))));
 
         $$ = m;
     }
@@ -616,22 +616,22 @@ field_value_pair:
      Time time;
 
      try {
-            time = *new Time(*new std::string($2));
+            time = *new Time(*new std::string($2.str));
      }
      catch (const InvalidHour& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1)+std::string($2));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1.str)+std::string($2.str));
         printErrorMessage(correctLineNo, "Invalid Hour", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1)+std::string($2));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1.str)+std::string($2.str));
         printErrorMessage(correctLineNo, "Invalid Minute", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1)+std::string($2));
+        int correctLineNo = getActualLineNumber(line_number, std::string($1.str)+std::string($2.str));
         printErrorMessage(correctLineNo, "Invalid Second", e.what());
         exit(EXIT_FAILURE);
 
@@ -639,7 +639,7 @@ field_value_pair:
 
         std::string timeString = std::to_string(time.convertIntoSeconds());
 
-        m->insert(std::make_pair($1, std::make_pair(timeString,*new std::string("time"))));
+        m->insert(std::make_pair($1.str, std::make_pair(timeString,*new std::string("time"))));
         $$ = m;
     }
     ;
@@ -657,7 +657,7 @@ void yyerror(const char *s) {
     extern int yylineno; // Defined and maintained by Bison to track line numbers
     extern char *yytext; // The text of the current token
 
-    std::cerr << "Syntax error at line " << line_number << ": " << s << std::endl;
+    std::cerr << "Syntax error at line " << yylval.token_info.line << ": " << s << std::endl;
     std::cerr << "Unexpected token: '" << yytext << "'" << std::endl;
     std::string errorMessage = unexpectedToken2ErrorMessage[yytext];
     std::cout << errorMessage << std::endl;
