@@ -226,7 +226,7 @@ exercise:
             *$9,                             // setDetails
             *$7,                             // fields
             "sets" + *new std::string($4.str),
-            line_number
+            $1.line
 
         ); 
     }
@@ -239,7 +239,7 @@ exercise:
             *$8,                             // setDetails
             *new std::map<std::string, std::pair<std::string, std::string> >(),                             // fields,
             "sets" + *new std::string($4.str),
-            line_number
+            $1.line
 
         ); 
     }
@@ -251,7 +251,7 @@ exercise:
             *new std::vector<SetDetail*>(),
             *$7,                         // fields
             "sets"+ *new std::string($4.str),
-            line_number
+            $1.line
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL { 
@@ -262,7 +262,7 @@ exercise:
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
             "sets"+ *new std::string($4.str),
-            line_number
+            $1.line
         ); 
     }
      | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL custom_fields '{' '}' { 
@@ -273,7 +273,7 @@ exercise:
             *new std::vector<SetDetail*>(),
             *$7,                         // fields
             "sets"+ *new std::string($4.str),
-            line_number
+            $1.line
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL '{' '}' { 
@@ -284,7 +284,7 @@ exercise:
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
             "sets"+ *new std::string($4.str),
-            line_number
+            $1.line
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL custom_fields '{' FAIL '}' { 
@@ -295,7 +295,7 @@ exercise:
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
             "sets"+ *new std::string($4.str),
-            line_number
+            $1.line
         ); 
     }
     | EXERCISE STRING SETS INTEGER_LITERAL REPS INTEGER_LITERAL '{' FAIL '}' { 
@@ -306,7 +306,7 @@ exercise:
             *new std::vector<SetDetail*>(),
             *new std::map<std::string, std::pair<std::string, std::string> >(),                 // fields
             "sets"+ *new std::string($4.str),
-            line_number
+            $1.line
         ); 
        
     }
@@ -345,7 +345,7 @@ exercise:
                                 *new std::vector<SetDetail*>(),
                                 fields,
                                 "REST", 
-                                line_number
+                                $1.line
                                 ); 
                                 
                                 };
@@ -361,7 +361,7 @@ set_details:
 
         reps.push_back(failRep);
         
-        SetDetail* failSet = new SetDetail(-2, reps, *new std::string("fail"), line_number) ;
+        SetDetail* failSet = new SetDetail(-2, reps, *new std::string("fail"), $2.line) ;
         //failSet->repDetails.push_back(failRep);
                 
         $1->push_back(failSet); 
@@ -376,7 +376,7 @@ set_details_without_fail:
     ;
 
 set_detail:
-    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2.str), *$4, "set"+ *new std::string($2.str), line_number); }
+    SET INTEGER_LITERAL '{' rep_details '}' { $$ = new SetDetail(std::stoi($2.str), *$4, "set"+ *new std::string($2.str), $1.line); }
     |
 
     // custom fields
@@ -385,10 +385,10 @@ set_detail:
         combinedFields.insert($3->begin(), $3->end());
     
         
-        $$ = new SetDetail(std::stoi($2.str), *$5, "set"+ *new std::string($2.str), line_number, combinedFields); }
+        $$ = new SetDetail(std::stoi($2.str), *$5, "set"+ *new std::string($2.str), $1.line, combinedFields); }
 
 
-    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), line_number) }
+    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), $1.line) }
 
     // custom fields
     | SET INTEGER_LITERAL custom_fields { 
@@ -397,12 +397,12 @@ set_detail:
         combinedFields.insert($3->begin(), $3->end());
     
 
-        $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), line_number, combinedFields);
+        $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), $1.line, combinedFields);
         
     }
 
     
-    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), line_number) }
+    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), $1.line) }
 
     // custom_fields
     | SET INTEGER_LITERAL custom_fields '{' '}' { 
@@ -410,7 +410,7 @@ set_detail:
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($3->begin(), $3->end());
 
-        $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), line_number, combinedFields); 
+        $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), $1.line, combinedFields); 
         
         }
 
@@ -450,10 +450,10 @@ set_detail:
        // I do not think anythink depends on the RepDetail vector of a REST set
        // I am leaving this here for now; will clean up later
        // tempRD.push_back(new RepDetail(-1, fields, 
-       // "rest" + *new std::string($2), line_number));
+       // "rest" + *new std::string($2), $1.line));
 
         // Directly adding the rest time attribute to the customFields of SetDetail
-        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2.str), line_number, fields) ;
+        $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2.str), $1.line, fields) ;
                             }
     ;
 
@@ -468,7 +468,7 @@ rep_details:
             -2, // Rep number
             combinedFields, // Custom fields
            "fail",
-           line_number
+           $2.line
         ));
     }
 
@@ -496,7 +496,7 @@ rep_detail:
             std::stoi($2.str), // Rep number
             *new std::map<std::string, std::pair<std::string, std::string> >(), // Empty custom fields
             "rep" + std::string($2.str),
-            line_number
+            $1.line
         );
     }
     | REP INTEGER_LITERAL custom_fields {
@@ -506,7 +506,7 @@ rep_detail:
             std::stoi($2.str), // Rep number
             combinedFields, // Custom fields
            "rep" + std::string($2.str),
-           line_number
+           $1.line
         );
     }
     | REST TIME_LITERAL {
@@ -544,7 +544,7 @@ rep_detail:
             -1, // Rep number
             combinedFields, // Custom fields
            "rep" + std::string($2.str),
-           line_number
+           $1.line
         );
     }
     ;
@@ -557,7 +557,7 @@ rep_range:
                 i, // Rep number in the range
                 *new std::map<std::string, std::pair<std::string,std::string> >(), // Empty custom fields
                 "reps" + std::string($2.str) + "-" + std::string($4.str),
-                line_number
+                $1.line
                 
             ));
         }
@@ -571,7 +571,7 @@ rep_range:
                 i, // Rep number in the range
                 combinedFields, // Custom fields
                 "reps" + std::string($2.str) + "-" + std::string($4.str),
-                line_number
+                $1.line
 
             ));
         }
