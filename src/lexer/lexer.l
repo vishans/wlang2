@@ -199,12 +199,11 @@ int line_number = 1;
 
 "/*"([^*]|[\r\n]|"*"[^/])*"*/" { 
      // Count newlines inside block comments
-   std::cout << yytext << std::endl;
     for (char *c = yytext; *c; ++c) {
-        // std::cout << "c is: " << *c << std::endl;
+      
         if (*c == '\n') {
             ++line_number;
-            std::cout << "\t Incremented" << std::endl;
+           
         }
     } 
 }
