@@ -118,7 +118,7 @@ field_def:
                 "\n" + 
                 " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
-                int correctLineNo = getActualLineNumber(line_number, $6->first);
+                int correctLineNo = $1.line;
                 printErrorMessage(correctLineNo, "Type Mismatch", message);
                 exit(EXIT_FAILURE);
             }
@@ -137,7 +137,7 @@ field_def:
                 "\n" + 
                 " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
 
-                int correctLineNo = getActualLineNumber(line_number, $6->first);
+                int correctLineNo = $1.line;
                 printErrorMessage(correctLineNo, "Type Mismatch", message);
                 exit(EXIT_FAILURE);
 
@@ -174,19 +174,19 @@ field_value:
             time = *new Time(*new std::string($1.str));
      }
      catch (const InvalidHour& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1.str));
+        int correctLineNo = $1.line;
         printErrorMessage(correctLineNo, "Invalid Hour", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1.str));
+        int correctLineNo = $1.line;
         printErrorMessage(correctLineNo, "Invalid Minute", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1.str));
+        int correctLineNo = $1.line;
         printErrorMessage(correctLineNo, "Invalid Second", e.what());
         exit(EXIT_FAILURE);
 
@@ -317,19 +317,19 @@ exercise:
             time = *new Time(*new std::string($2.str));
         }
         catch (const InvalidHour& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Hour", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = getActualLineNumber(line_number, std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Minute", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = getActualLineNumber(line_number, std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Second", e.what());
             exit(EXIT_FAILURE);
 
@@ -427,19 +427,19 @@ set_detail:
         
         }
         catch (const InvalidHour& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Hour", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Minute", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Second", e.what());
             exit(EXIT_FAILURE);
 
@@ -518,19 +518,19 @@ rep_detail:
         
         }
         catch (const InvalidHour& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            int lineNo = $1.line;
+            printErrorMessage( lineNo, "Invalid Hour", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Minute", e.what());
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = getActualLineNumber(line_number, "rest"+std::string($2.str));
+            int correctLineNo = $1.line;
             printErrorMessage(correctLineNo, "Invalid Second", e.what());
             exit(EXIT_FAILURE);
 
@@ -619,19 +619,19 @@ field_value_pair:
             time = *new Time(*new std::string($2.str));
      }
      catch (const InvalidHour& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1.str)+std::string($2.str));
+        int correctLineNo = $1.line;
         printErrorMessage(correctLineNo, "Invalid Hour", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1.str)+std::string($2.str));
+        int correctLineNo = $1.line;
         printErrorMessage(correctLineNo, "Invalid Minute", e.what());
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
-        int correctLineNo = getActualLineNumber(line_number, std::string($1.str)+std::string($2.str));
+        int correctLineNo = $1.line;
         printErrorMessage(correctLineNo, "Invalid Second", e.what());
         exit(EXIT_FAILURE);
 
