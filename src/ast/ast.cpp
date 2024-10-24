@@ -27,7 +27,7 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, s
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-                int correctLineNo = getActualLineNumber(line_number, lineId);
+                int correctLineNo = line_number;
                 printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
 
                 exit(EXIT_FAILURE);
@@ -47,7 +47,7 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, s
 
                 std::cout << "in here " << std::endl;
                 
-                int correctLineNo = getActualLineNumber(line_number, lineId);
+                int correctLineNo = line_number;
                 printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
 
                 exit(EXIT_FAILURE);
@@ -92,7 +92,7 @@ int lineNumber,
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-                int correctLineNo = getActualLineNumber(line_number, lineId);
+                int correctLineNo = line_number;
                 printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
 
                 exit(EXIT_FAILURE);
@@ -111,7 +111,7 @@ int lineNumber,
             + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
             ;
            
-            int correctLineNo = getActualLineNumber(line_number, lineId);
+            int correctLineNo = line_number;
             printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
 
             exit(EXIT_FAILURE);
@@ -135,7 +135,7 @@ void SetDetail::tally(){
             if(rep->repNumber <= prev){
                 
                 std::string errorMessage = "Reps should be positive and increasing.";
-                int correctLineNo = getActualLineNumber(rep->lineNumber, rep->lineId);
+                int correctLineNo = rep->lineNumber;
                 printErrorMessage(correctLineNo, "Invalid Reps", errorMessage);
 
                 exit(EXIT_FAILURE);
@@ -400,7 +400,7 @@ std::string lineId, int lineNumber)
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-                int correctLineNo = getActualLineNumber(line_number, lineId);
+                int correctLineNo = line_number;
                 printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
 
                 exit(EXIT_FAILURE);
@@ -419,7 +419,7 @@ std::string lineId, int lineNumber)
             + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
             ;
            
-            int correctLineNo = getActualLineNumber(line_number, lineId);
+            int correctLineNo = line_number;
             printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
 
             exit(EXIT_FAILURE);
@@ -469,7 +469,7 @@ void Exercise::tally(){
             if(set->setNumber <= prev){
 
                 std::string errorMessage = "Sets should be positive and increasing.";
-                int correctLineNo = getActualLineNumber(set->lineNumber, set->lineId);
+                int correctLineNo =set->lineNumber;
                 printErrorMessage(correctLineNo, "Invalid Sets", errorMessage);
 
                 exit(EXIT_FAILURE);

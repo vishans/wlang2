@@ -6,6 +6,8 @@
 std::string fp; // Filepath given to main; parsed by cli11
 
 /*
+This function is deprecated. Now using stored line number (which is accurate) from token_info.line.
+
 Flex seems to consume newlines very greedily which lead to my line_number counter or even
 yylineno to be incremented. Sometimes during errors, reported line number might not be accurate.
 The line number given is always >= the actual line number.
@@ -18,6 +20,8 @@ For e.g "reps 1 - 7"          -> "reps1-7"
         "reps   1  -     7"   -> "reps1-7" 
 
 */
+
+// Deprecated
 int getActualLineNumber(int lineNumber, std::string keyword){
     std::ifstream file(fp);
 
