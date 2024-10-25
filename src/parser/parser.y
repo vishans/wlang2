@@ -233,6 +233,7 @@ field_def:
 
 
         constNameToValue[$2.str] = $3->first;
+        nameToTypeMap[$2.str] = $3->second;
     }
 
     ;
