@@ -106,7 +106,42 @@ field_declarations:
     ;
 
 field_def:
-    FIELD IDENTIFIER TYPE field_type DEFAULT field_value AS IDENTIFIER { 
+    FIELD IDENTIFIER TYPE field_type DEFAULT field_value AS IDENTIFIER {
+
+        if(*new std::string($2.str) == "REST"){
+            // REST is a reserved word
+            int correctLineNo = $1.line;
+            std::string message = "'REST' is a reserved word, and therefore cannot be used as a field name.";
+            printErrorMessage(correctLineNo, "Name Conflict", message);
+            exit(EXIT_FAILURE);
+
+        }
+
+
+        if(nameToTypeMap.find($2.str) != nameToTypeMap.end()){
+            // Identifier is already being used
+
+             std::string message = "The field name '" + std::string($2.str) + "' is already being used.";
+
+                int correctLineNo = $1.line;
+                printErrorMessage(correctLineNo, "Name Conflict", message);
+                exit(EXIT_FAILURE);
+
+        }
+
+        if(aliasToNameMap.find($8.str) != aliasToNameMap.end()){
+            // Alias is already being used
+
+             std::string message = "The alias '" + std::string($8.str) + "' is already being used for field '"+  aliasToNameMap[$8.str]  +"'. It cannot be used again for '" + $2.str +"'.";
+
+                int correctLineNo = $1.line;
+                printErrorMessage(correctLineNo, "Alias Conflict", message);
+                exit(EXIT_FAILURE);
+
+        }  
+
+
+
         aliasToNameMap[$8.str] = $2.str;
         nameToTypeMap[$2.str] = *$4;
 
@@ -127,6 +162,30 @@ field_def:
         nameToDefaultMap[$2.str] = $6->first;
     }
     | FIELD IDENTIFIER TYPE field_type DEFAULT field_value { 
+
+         if(*new std::string($2.str) == "REST"){
+            // REST is a reserved word
+            int correctLineNo = $1.line;
+            std::string message = "'REST' is a reserved word, and therefore cannot be used as a field name.";
+            printErrorMessage(correctLineNo, "Name Conflict", message);
+            exit(EXIT_FAILURE);
+
+        }
+
+
+        if(nameToTypeMap.find($2.str) != nameToTypeMap.end()){
+            // Identifier is already being used
+
+             std::string message = "The field name '" + std::string($2.str) + "' is already being used.";
+
+                int correctLineNo = $1.line;
+                printErrorMessage(correctLineNo, "Name Conflict", message);
+                exit(EXIT_FAILURE);
+
+        }
+
+
+
         nameToTypeMap[$2.str] = *$4;
 
         if(*$4 != $6->second){
@@ -148,6 +207,30 @@ field_def:
         nameToDefaultMap[$2.str] = $6->first;
     }
     | CONST IDENTIFIER field_value {
+
+         if(*new std::string($2.str) == "REST"){
+            // REST is a reserved word
+            int correctLineNo = $1.line;
+            std::string message = "'REST' is a reserved word, and therefore cannot be used as a constant name.";
+            printErrorMessage(correctLineNo, "Name Conflict", message);
+            exit(EXIT_FAILURE);
+
+        }
+
+
+        if(constNameToValue.find($2.str) != constNameToValue.end()){
+            // Identifier is already being used
+
+             std::string message = "The field name '" + std::string($2.str) + "' is already being used.";
+
+                int correctLineNo = $1.line;
+                printErrorMessage(correctLineNo, "Name Conflict", message);
+                exit(EXIT_FAILURE);
+
+        }
+
+
+
         constNameToValue[$2.str] = $3->first;
     }
 
