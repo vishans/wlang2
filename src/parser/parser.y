@@ -118,14 +118,14 @@ field_def:
         }
 
 
-        if(nameToTypeMap.find($2.str) != nameToTypeMap.end()){
+        if(nameToTypeMap.find($2.str) != nameToTypeMap.end() || constNameToValue.find($2.str) != constNameToValue.end()){
             // Identifier is already being used
 
-             std::string message = "The field name '" + std::string($2.str) + "' is already being used.";
+             std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
-                int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Name Conflict", message);
-                exit(EXIT_FAILURE);
+            int correctLineNo = $1.line;
+            printErrorMessage(correctLineNo, "Name Conflict", message);
+            exit(EXIT_FAILURE);
 
         }
 
@@ -173,10 +173,10 @@ field_def:
         }
 
 
-        if(nameToTypeMap.find($2.str) != nameToTypeMap.end()){
+        if(nameToTypeMap.find($2.str) != nameToTypeMap.end() || constNameToValue.find($2.str) != constNameToValue.end()){
             // Identifier is already being used
 
-             std::string message = "The field name '" + std::string($2.str) + "' is already being used.";
+             std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
                 int correctLineNo = $1.line;
                 printErrorMessage(correctLineNo, "Name Conflict", message);
@@ -208,7 +208,7 @@ field_def:
     }
     | CONST IDENTIFIER field_value {
 
-         if(*new std::string($2.str) == "REST"){
+        if(*new std::string($2.str) == "REST"){
             // REST is a reserved word
             int correctLineNo = $1.line;
             std::string message = "'REST' is a reserved word, and therefore cannot be used as a constant name.";
@@ -218,16 +218,17 @@ field_def:
         }
 
 
-        if(constNameToValue.find($2.str) != constNameToValue.end()){
+        if(constNameToValue.find($2.str) != constNameToValue.end() || nameToTypeMap.find($2.str) != nameToTypeMap.end() ){
             // Identifier is already being used
 
-             std::string message = "The field name '" + std::string($2.str) + "' is already being used.";
+             std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
                 int correctLineNo = $1.line;
                 printErrorMessage(correctLineNo, "Name Conflict", message);
                 exit(EXIT_FAILURE);
 
         }
+
 
 
 
