@@ -15,7 +15,7 @@ The **W Language**, is a domain-specific language (DSL) designed to define and t
 
 ## Technologies Used
 
-- **C++**: The main language used for implementing the parser and interpreter.
+- **C++**: The main language used for implementing the parser and compiler.
 - **Bison**: A powerful parser generator for defining the grammar and creating the parser.
 - **Flex**: A lexical analyzer generator for tokenizing the input.
 
