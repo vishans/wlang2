@@ -666,6 +666,7 @@ rep_range:
 custom_fields:
     custom_fields field_value_pair { $$ = $1; $1->insert($2->begin(), $2->end()); }
     | field_value_pair { $$ = new std::map<std::string, std::pair<std::string, std::string> >(); $$->insert($1->begin(), $1->end()); }
+   
     ;
 
 field_value_pair:
@@ -738,6 +739,7 @@ field_value_pair:
 
 void yyerror(const char *s) {
     initializeErrorMessageMap();
+    extern char* yytext;
 
     std::vector<std::string> expectedTokens = extractExpectedTokens(s);
     std::string expected;
@@ -757,5 +759,6 @@ void yyerror(const char *s) {
 
     std::string errorMessage = expectedToken2ErrorMessage[expected];
     std::cout << expected << std::endl;
+    if(expected == "") errorMessage += *new std::string(yytext) + "'.";
     printErrorMessage(yylval.token_info.line, "Syntax", errorMessage);
 }
