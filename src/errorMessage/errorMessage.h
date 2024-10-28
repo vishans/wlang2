@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-extern std::map<std::string, std::string> unexpectedToken2ErrorMessage;
+extern std::map<std::string, std::string> expectedToken2ErrorMessage;
 void initializeErrorMessageMap();
 
 #endif

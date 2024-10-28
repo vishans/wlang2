@@ -739,11 +739,23 @@ field_value_pair:
 void yyerror(const char *s) {
     initializeErrorMessageMap();
 
-    extern int yylineno; // Defined and maintained by Bison to track line numbers
-    extern char *yytext; // The text of the current token
+    std::vector<std::string> expectedTokens = extractExpectedTokens(s);
+    std::string expected;
+    if (!expectedTokens.empty()) {
+        std::string token;
+        for (auto it = expectedTokens.begin(); it != expectedTokens.end(); ++it) {
+            token = *it;
+            
+            if(std::next(it) != expectedTokens.end()){
+                token+=" ";
+            }
 
-    std::cerr << "Syntax error at line " << yylval.token_info.line << ": " << s << std::endl;
-    std::cerr << "Unexpected token: '" << yytext << "'" << std::endl;
-    std::string errorMessage = unexpectedToken2ErrorMessage[yytext];
-    std::cout << errorMessage << std::endl;
+            expected += token;
+        }
+        std::cerr << std::endl;
+    }
+
+    std::string errorMessage = expectedToken2ErrorMessage[expected];
+    std::cout << expected << std::endl;
+    printErrorMessage(yylval.token_info.line, "Syntax", errorMessage);
 }

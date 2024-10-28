@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
             return 1;
         }
     } else {
-        std::cerr << "Parsing failed!" << std::endl;
+        // std::cerr << "Parsing failed!" << std::endl;
         cleanUp();
         return 1;
     }
