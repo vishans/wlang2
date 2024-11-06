@@ -113,7 +113,7 @@ field_def:
             // REST is a reserved word
             int correctLineNo = $1.line;
             std::string message = "'REST' is a reserved word, and therefore cannot be used as a field name.";
-            printErrorMessage(correctLineNo, "Name Conflict", message);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
             exit(EXIT_FAILURE);
 
         }
@@ -125,7 +125,7 @@ field_def:
              std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Name Conflict", message);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
             exit(EXIT_FAILURE);
 
         }
@@ -136,7 +136,7 @@ field_def:
              std::string message = "The alias '" + std::string($8.str) + "' is already being used for field '"+  aliasToNameMap[$8.str]  +"'. It cannot be used again for '" + $2.str +"'.";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Alias Conflict", message);
+                printErrorMessage(correctLineNo, "Alias Conflict", message, $8.column);
                 exit(EXIT_FAILURE);
 
         }  
@@ -155,7 +155,7 @@ field_def:
                 " Expected " + *$4 + " but got " + $6->value + " (" + $6->type + ").";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Type Mismatch", message);
+                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column);
                 exit(EXIT_FAILURE);
             }
 
@@ -168,7 +168,7 @@ field_def:
             // REST is a reserved word
             int correctLineNo = $1.line;
             std::string message = "'REST' is a reserved word, and therefore cannot be used as a field name.";
-            printErrorMessage(correctLineNo, "Name Conflict", message);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
             exit(EXIT_FAILURE);
 
         }
@@ -180,7 +180,7 @@ field_def:
              std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Name Conflict", message);
+                printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
                 exit(EXIT_FAILURE);
 
         }
@@ -198,7 +198,7 @@ field_def:
                 " Expected " + *$4 + " but got " + $6->value + " (" + $6->type + ").";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Type Mismatch", message);
+                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column);
                 exit(EXIT_FAILURE);
 
             }
@@ -213,7 +213,7 @@ field_def:
             // REST is a reserved word
             int correctLineNo = $1.line;
             std::string message = "'REST' is a reserved word, and therefore cannot be used as a constant name.";
-            printErrorMessage(correctLineNo, "Name Conflict", message);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
             exit(EXIT_FAILURE);
 
         }
@@ -225,7 +225,7 @@ field_def:
              std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Name Conflict", message);
+                printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
                 exit(EXIT_FAILURE);
 
         }
@@ -258,15 +258,15 @@ field_value:
             time = *new Time(*new std::string($1.str));
         } catch (const InvalidHour& e) {
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
             exit(EXIT_FAILURE);
         } catch (const InvalidMinute& e) {
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
             exit(EXIT_FAILURE);
         } catch (const InvalidSecond& e) {
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
             exit(EXIT_FAILURE);
         }
 
@@ -396,19 +396,19 @@ exercise:
         }
         catch (const InvalidHour& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
@@ -506,19 +506,19 @@ set_detail:
         }
         catch (const InvalidHour& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
@@ -597,19 +597,19 @@ rep_detail:
         }
         catch (const InvalidHour& e){
             int lineNo = $1.line;
-            printErrorMessage( lineNo, "Invalid Hour", e.what());
+            printErrorMessage( lineNo, "Invalid Hour", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
             exit(EXIT_FAILURE);
 
         }
@@ -699,19 +699,19 @@ field_value_pair:
      }
      catch (const InvalidHour& e){
         int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+        printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
         int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+        printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
         int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Second", e.what());
+        printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
         exit(EXIT_FAILURE);
 
      }
@@ -753,5 +753,5 @@ void yyerror(const char *s) {
     std::string errorMessage = expectedToken2ErrorMessage[expected];
     std::cout << expected << std::endl;
     if(expected == "") errorMessage += *new std::string(yytext) + "'.";
-    printErrorMessage(yylval.token_info.line, "Syntax", errorMessage);
+    printErrorMessage(yylval.token_info.line, "Syntax", errorMessage, yylval.token_info.column);
 }
