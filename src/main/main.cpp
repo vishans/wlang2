@@ -81,6 +81,8 @@ int main(int argc, char **argv) {
                         std::cout << "    "  << pair.first <<  ": [" << pair.second << ", " << nameToTypeMap[pair.first] << " ]"<< std::endl;
                     }
                 }
+
+                std::cout << std::endl;
             }
 
             std::string csvFileName;
