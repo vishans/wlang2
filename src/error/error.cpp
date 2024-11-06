@@ -2,8 +2,8 @@
 #include <iostream>
 #include <string>
 
-void printErrorMessage(int lineNumber, std::string errorType, std::string errorMessage){
-    std::string message = "Line " + std::to_string(lineNumber) +": " + "Error: "+ errorType + ". " + errorMessage;
+void printErrorMessage(int lineNumber,  std::string errorType, std::string errorMessage, int column){
+    std::string message = "Line " + std::to_string(lineNumber) +": "+ std::to_string(column)+ "." + "Error: "+ errorType + ". " + errorMessage;
 
     std::cout << message << std::endl;
 }
