@@ -52,7 +52,7 @@ extern char *yytext;
     std::vector<RepDetail*> *repDetails;
     std::map<std::string, std::pair<std::string, std::string> > *customFields;
     std::string *type;  // Type for field_type
-    std::pair<std::string, std::string> *value; // Type for field_value + type
+    Field *field; // 
     std::map<std::string, std::pair<std::string, std::string> > *fieldValuePair; // Type for field value pair with type
                                                         // field (string) -> value, type (both strings)
 
@@ -60,6 +60,7 @@ extern char *yytext;
     struct {
         char *str; // Token value if any, or nullptr for keywords/symbols
         int line;  // Line number where the token was found
+        int column;
     } token_info;
 
 }
@@ -89,7 +90,7 @@ extern char *yytext;
 
 %type <customFields> custom_fields
 %type <type> field_type
-%type <value> field_value
+%type <field> field_value
 %type <fieldValuePair> field_value_pair
 
 %%
@@ -145,13 +146,13 @@ field_def:
         aliasToNameMap[$8.str] = $2.str;
         nameToTypeMap[$2.str] = *$4;
 
-        if(*$4 != $6->second){
+        if(*$4 != $6->type){
 
-            if(!(*$4 == "float" && $6->second == "integer")){
+            if(!(*$4 == "float" && $6->type == "integer")){
 
                 std::string message = "The field '" + std::string($2.str) + "' was given the wrong type." +
                 "\n" + 
-                " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
+                " Expected " + *$4 + " but got " + $6->value + " (" + $6->type + ").";
 
                 int correctLineNo = $1.line;
                 printErrorMessage(correctLineNo, "Type Mismatch", message);
@@ -159,7 +160,7 @@ field_def:
             }
 
         }
-        nameToDefaultMap[$2.str] = $6->first;
+        nameToDefaultMap[$2.str] = $6->value;
     }
     | FIELD IDENTIFIER TYPE field_type DEFAULT field_value { 
 
@@ -188,13 +189,13 @@ field_def:
 
         nameToTypeMap[$2.str] = *$4;
 
-        if(*$4 != $6->second){
+        if(*$4 != $6->type){
 
-            if(!(*$4 == "float" && $6->second == "integer")){
+            if(!(*$4 == "float" && $6->type == "integer")){
 
                 std::string message = "The field '" + std::string($2.str) + "' was given the wrong type." +
                 "\n" + 
-                " Expected " + *$4 + " but got " + $6->first + " (" + $6->second + ").";
+                " Expected " + *$4 + " but got " + $6->value + " (" + $6->type + ").";
 
                 int correctLineNo = $1.line;
                 printErrorMessage(correctLineNo, "Type Mismatch", message);
@@ -204,7 +205,7 @@ field_def:
 
         }
 
-        nameToDefaultMap[$2.str] = $6->first;
+        nameToDefaultMap[$2.str] = $6->value;
     }
     | CONST IDENTIFIER field_value {
 
@@ -232,8 +233,8 @@ field_def:
 
 
 
-        constNameToValue[$2.str] = $3->first;
-        nameToTypeMap[$2.str] = $3->second;
+        constNameToValue[$2.str] = $3->value;
+        nameToTypeMap[$2.str] = $3->type;
     }
 
     ;
@@ -247,39 +248,31 @@ field_type:
     ;
 
 field_value:
-    STRING { $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "string"); }
-    | INTEGER_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "integer"); }
-    | FLOAT_LITERAL { $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "float"); }
-    | BOOLEAN_LITERAL{ $$ = new std::pair<std::string, std::string>(*new std::string($1.str), "boolean"); }
+    STRING { $$ = new Field($1.str, "string", $1.line, $1.column); }
+    | INTEGER_LITERAL { $$ = new Field($1.str, "integer", $1.line, $1.column); }
+    | FLOAT_LITERAL { $$ = new Field($1.str, "float", $1.line, $1.column); }
+    | BOOLEAN_LITERAL { $$ = new Field($1.str, "boolean", $1.line, $1.column); }
     | TIME_LITERAL { 
-
-     Time time;
-
-     try {
+        Time time;
+        try {
             time = *new Time(*new std::string($1.str));
-     }
-     catch (const InvalidHour& e){
-        int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Hour", e.what());
-        exit(EXIT_FAILURE);
-
-     }
-     catch (const InvalidMinute& e){
-        int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Minute", e.what());
-        exit(EXIT_FAILURE);
-
-     }
-     catch (const InvalidSecond& e){
-        int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Second", e.what());
-        exit(EXIT_FAILURE);
-
-     }
+        } catch (const InvalidHour& e) {
+            int correctLineNo = $1.line;
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what());
+            exit(EXIT_FAILURE);
+        } catch (const InvalidMinute& e) {
+            int correctLineNo = $1.line;
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what());
+            exit(EXIT_FAILURE);
+        } catch (const InvalidSecond& e) {
+            int correctLineNo = $1.line;
+            printErrorMessage(correctLineNo, "Invalid Second", e.what());
+            exit(EXIT_FAILURE);
+        }
 
         std::string timeString = std::to_string(time.convertIntoSeconds());
-        $$ = new std::pair<std::string, std::string>(timeString, "time"); 
-        }
+        $$ = new Field(timeString, "time", $1.line, $1.column);
+    }
     ;
 
 workout:

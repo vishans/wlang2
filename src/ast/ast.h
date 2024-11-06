@@ -187,4 +187,16 @@ public:
     std::string csv() const;
 };
 
+struct Field {
+    std::string value;
+    std::string type;
+    int line;
+    int column;
+
+    // Constructor for convenience
+    Field(const std::string& val, const std::string& typ, int ln, int col)
+        : value(val), type(typ), line(ln), column(col) {}
+};
+
+
 #endif // AST_H
