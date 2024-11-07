@@ -13,7 +13,7 @@ void printErrorMessage(int lineNumber,  std::string errorType, std::string error
     std::cout << '\t' << getLine(fp, lineNumber) << std::endl;
     std::cout << '\t' <<std::string(std::max(column - 1, 0), ' ') << std::string(std::max(length, 0), '^') << std::endl;
 
-    std::cout << "Column was " << column << std::endl;
+    //std::cout << "Column was " << column << std::endl;
 }
 
 std::vector<std::string> extractExpectedTokens(const std::string& s) {
