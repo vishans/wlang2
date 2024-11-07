@@ -27,12 +27,15 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, s
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-                int correctLineNo = line_number;
-                printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
+
+                size_t column = getLine(fp, lineNumber).find(field);
+                printErrorMessage(lineNumber, "Undefined Field", errorMessage, column+1, field.length() );
 
                 exit(EXIT_FAILURE);
             }
         }
+
+        // TODO: Check if field is a constant and abort and print error
 
         // Type check
         if(type != nameToTypeMap.at(actualField)){
@@ -92,12 +95,15 @@ int lineNumber,
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-                int correctLineNo = line_number;
-                printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
+               
+                size_t column = getLine(fp, lineNumber).find(field);
+                printErrorMessage(lineNumber, "Undefined Field", errorMessage, column+1, field.length() );
 
                 exit(EXIT_FAILURE);
             }
         }
+
+        // TODO: Check if field is a constant and abort and print error
 
         // Type check
         if(type != nameToTypeMap.at(actualField)){
@@ -400,12 +406,15 @@ std::string lineId, int lineNumber)
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-                int correctLineNo = line_number;
-                printErrorMessage(correctLineNo, "Undefine Field", errorMessage);
+
+                size_t column = getLine(fp, lineNumber).find(field);
+                printErrorMessage(lineNumber, "Undefined Field", errorMessage, column+1, field.length() );
 
                 exit(EXIT_FAILURE);
             }
         }
+
+        // TODO: Check if field is a constant and abort and print error
 
         // Type check
         if(type != nameToTypeMap.at(actualField)){
