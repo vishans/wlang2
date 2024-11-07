@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <cstring>
 #include "../ast/ast.h"
 #include "parser.tab.hpp"
 #include "../globals/globals.h"
@@ -113,7 +114,7 @@ field_def:
             // REST is a reserved word
             int correctLineNo = $1.line;
             std::string message = "'REST' is a reserved word, and therefore cannot be used as a field name.";
-            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
@@ -125,7 +126,7 @@ field_def:
              std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
@@ -136,7 +137,7 @@ field_def:
              std::string message = "The alias '" + std::string($8.str) + "' is already being used for field '"+  aliasToNameMap[$8.str]  +"'. It cannot be used again for '" + $2.str +"'.";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Alias Conflict", message, $8.column);
+                printErrorMessage(correctLineNo, "Alias Conflict", message, $8.column, strlen($8.str));
                 exit(EXIT_FAILURE);
 
         }  
@@ -155,7 +156,7 @@ field_def:
                 " Expected " + *$4 + " but got " + $6->value + " (" + $6->type + ").";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column);
+                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column, $6->value.length());
                 exit(EXIT_FAILURE);
             }
 
@@ -168,7 +169,7 @@ field_def:
             // REST is a reserved word
             int correctLineNo = $1.line;
             std::string message = "'REST' is a reserved word, and therefore cannot be used as a field name.";
-            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
@@ -180,7 +181,7 @@ field_def:
              std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
+                printErrorMessage(correctLineNo, "Name Conflict", message, $2.column, strlen($2.str));
                 exit(EXIT_FAILURE);
 
         }
@@ -198,7 +199,7 @@ field_def:
                 " Expected " + *$4 + " but got " + $6->value + " (" + $6->type + ").";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column);
+                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column, strlen($2.str));
                 exit(EXIT_FAILURE);
 
             }
@@ -213,7 +214,7 @@ field_def:
             // REST is a reserved word
             int correctLineNo = $1.line;
             std::string message = "'REST' is a reserved word, and therefore cannot be used as a constant name.";
-            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
+            printErrorMessage(correctLineNo, "Name Conflict", message, $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
@@ -225,7 +226,7 @@ field_def:
              std::string message = "The name '" + std::string($2.str) + "' is already being used.";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Name Conflict", message, $2.column);
+                printErrorMessage(correctLineNo, "Name Conflict", message, $2.column, strlen($2.str));
                 exit(EXIT_FAILURE);
 
         }
@@ -258,15 +259,15 @@ field_value:
             time = *new Time(*new std::string($1.str));
         } catch (const InvalidHour& e) {
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
         } catch (const InvalidMinute& e) {
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
         } catch (const InvalidSecond& e) {
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
         }
 
@@ -396,19 +397,19 @@ exercise:
         }
         catch (const InvalidHour& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
@@ -506,29 +507,25 @@ set_detail:
         }
         catch (const InvalidHour& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
 
         fields.insert({"REST", std::make_pair<std::string, std::string>(std::to_string(time.convertIntoSeconds()), "time")});
 
-       // I do not think anythink depends on the RepDetail vector of a REST set
-       // I am leaving this here for now; will clean up later
-       // tempRD.push_back(new RepDetail(-1, fields, 
-       // "rest" + *new std::string($2), $1.line));
 
         // Directly adding the rest time attribute to the customFields of SetDetail
         $$ = new SetDetail(-1, tempRD, "rest" + *new std::string($2.str), $1.line, fields) ;
@@ -597,19 +594,19 @@ rep_detail:
         }
         catch (const InvalidHour& e){
             int lineNo = $1.line;
-            printErrorMessage( lineNo, "Invalid Hour", e.what(), $1.column);
+            printErrorMessage( lineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
             int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
             exit(EXIT_FAILURE);
 
         }
@@ -699,19 +696,19 @@ field_value_pair:
      }
      catch (const InvalidHour& e){
         int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column);
+        printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
         int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column);
+        printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
         int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column);
+        printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
         exit(EXIT_FAILURE);
 
      }
@@ -753,5 +750,5 @@ void yyerror(const char *s) {
     std::string errorMessage = expectedToken2ErrorMessage[expected];
     std::cout << expected << std::endl;
     if(expected == "") errorMessage += *new std::string(yytext) + "'.";
-    printErrorMessage(yylval.token_info.line, "Syntax", errorMessage, yylval.token_info.column);
+    printErrorMessage(yylval.token_info.line, "Syntax", errorMessage, yylval.token_info.column, strlen(yytext));
 }
