@@ -396,20 +396,20 @@ exercise:
             time = *new Time(*new std::string($2.str));
         }
         catch (const InvalidHour& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
@@ -506,20 +506,20 @@ set_detail:
         
         }
         catch (const InvalidHour& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
@@ -593,20 +593,20 @@ rep_detail:
         
         }
         catch (const InvalidHour& e){
-            int lineNo = $1.line;
-            printErrorMessage( lineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
+            int lineNo = $2.line;
+            printErrorMessage( lineNo, "Invalid Hour", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidMinute& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
         catch (const InvalidSecond& e){
-            int correctLineNo = $1.line;
-            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
+            int correctLineNo = $2.line;
+            printErrorMessage(correctLineNo, "Invalid Second", e.what(), $2.column, strlen($2.str));
             exit(EXIT_FAILURE);
 
         }
@@ -695,20 +695,20 @@ field_value_pair:
             time = *new Time(*new std::string($2.str));
      }
      catch (const InvalidHour& e){
-        int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $1.column, strlen($1.str));
+        int correctLineNo = $2.line;
+        printErrorMessage(correctLineNo, "Invalid Hour", e.what(), $2.column, strlen($2.str));
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidMinute& e){
-        int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $1.column, strlen($1.str));
+        int correctLineNo = $2.line;
+        printErrorMessage(correctLineNo, "Invalid Minute", e.what(), $2.column, strlen($2.str));
         exit(EXIT_FAILURE);
 
      }
      catch (const InvalidSecond& e){
-        int correctLineNo = $1.line;
-        printErrorMessage(correctLineNo, "Invalid Second", e.what(), $1.column, strlen($1.str));
+        int correctLineNo = $2.line;
+        printErrorMessage(correctLineNo, "Invalid Second", e.what(), $2.column, strlen($2.str));
         exit(EXIT_FAILURE);
 
      }
