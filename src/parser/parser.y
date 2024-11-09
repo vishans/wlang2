@@ -1,5 +1,5 @@
-%error-verbose
-%locations
+%define parse.error verbose
+%locations 
 
 %{
 #include <iostream>
