@@ -6,6 +6,7 @@
 #include "../helper/helper.h"
 #include <algorithm>
 #include <map>
+#include <regex>
 
 
 using namespace std;
@@ -28,14 +29,39 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, s
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
 
-                size_t column = getLine(fp, lineNumber).find(field);
-                printErrorMessage(lineNumber, "Undefined Field", errorMessage, column+1, field.length() );
+                std::string line = getLine(fp, lineNumber);
+
+                std::string pattern_str = "\\b" + field + "\\b";
+                std::regex pattern(pattern_str);
+
+                std::smatch match;
+                std::regex_search(line, match, pattern);
+
+                printErrorMessage(lineNumber, "Undefined Field", errorMessage, match.position()+1, field.length() );
 
                 exit(EXIT_FAILURE);
             }
         }
 
-        // TODO: Check if field is a constant and abort and print error
+        if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+            
+            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            std::string line = getLine(fp, lineNumber);
+
+            
+            std::string pattern_str = "\\b" + field + "\\b";
+            std::regex pattern(pattern_str);
+
+            
+            std::smatch match;
+            std::regex_search(line, match, pattern);
+            
+            printErrorMessage(lineNumber, "Constant Violation", errorMessage, match.position()+1, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
 
         // Type check
         if(type != nameToTypeMap.at(actualField)){
@@ -95,15 +121,39 @@ int lineNumber,
             // Field does not exist i.e has not been defined
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
-               
-                size_t column = getLine(fp, lineNumber).find(field);
-                printErrorMessage(lineNumber, "Undefined Field", errorMessage, column+1, field.length() );
+
+                std::string line = getLine(fp, lineNumber);
+
+                std::string pattern_str = "\\b" + field + "\\b";
+                std::regex pattern(pattern_str);
+
+                std::smatch match;
+                std::regex_search(line, match, pattern);
+
+                printErrorMessage(lineNumber, "Undefined Field", errorMessage, match.position()+1, field.length() );
 
                 exit(EXIT_FAILURE);
             }
         }
 
-        // TODO: Check if field is a constant and abort and print error
+         if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+             std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            std::string line = getLine(fp, lineNumber);
+
+            
+            std::string pattern_str = "\\b" + field + "\\b";
+            std::regex pattern(pattern_str);
+
+            
+            std::smatch match;
+            std::regex_search(line, match, pattern);
+            
+            printErrorMessage(lineNumber, "Constant Violation", errorMessage, match.position()+1, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
 
         // Type check
         if(type != nameToTypeMap.at(actualField)){
@@ -407,14 +457,38 @@ std::string lineId, int lineNumber)
             if(nameToTypeMap.find(field) == nameToTypeMap.end()){
                 std::string errorMessage = "The field '" + field + "' has not been defined.";
 
-                size_t column = getLine(fp, lineNumber).find(field);
-                printErrorMessage(lineNumber, "Undefined Field", errorMessage, column+1, field.length() );
+                std::string line = getLine(fp, lineNumber);
+
+                std::string pattern_str = "\\b" + field + "\\b";
+                std::regex pattern(pattern_str);
+
+                std::smatch match;
+                std::regex_search(line, match, pattern);
+
+                printErrorMessage(lineNumber, "Undefined Field", errorMessage, match.position()+1, field.length() );
 
                 exit(EXIT_FAILURE);
             }
         }
 
-        // TODO: Check if field is a constant and abort and print error
+         if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+             std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            std::string line = getLine(fp, lineNumber);
+
+            
+            std::string pattern_str = "\\b" + field + "\\b";
+            std::regex pattern(pattern_str);
+
+            
+            std::smatch match;
+            std::regex_search(line, match, pattern);
+            
+            printErrorMessage(lineNumber, "Constant Violation", errorMessage, match.position()+1, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
 
         // Type check
         if(type != nameToTypeMap.at(actualField)){
