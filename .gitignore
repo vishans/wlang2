@@ -8,3 +8,4 @@ w
 *.csv
 *.exe
 .DS_Store
+win_obj/
