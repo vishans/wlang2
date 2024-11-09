@@ -1,0 +1,40 @@
+name: Build and Update Release
+
+on:
+  push:
+    branches:
+      - actions  # or whichever branch you want this to run on
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up C++ environment
+        uses: actions/setup-python@v2  # Optional if needed for any Python steps
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y flex bison g++  # Install any required dependencies
+
+      - name: Build Project
+        run: make all  # Adjust based on your Makefile
+
+      - name: Archive build
+        run: |
+          mkdir -p build_output
+          cp w build_output/  # Copy the executable to an output directory
+          tar -czvf build_output.tar.gz build_output
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build_output.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
