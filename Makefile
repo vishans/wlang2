@@ -23,7 +23,9 @@ CXX = g++
 WINDOWS_CXX = x86_64-w64-mingw32-g++
 
 # Target for native build
-all: w
+all:
+	mkdir -p obj/
+	w
 
 # Parser and lexer targets
 $(PARSER)/parser.tab.cpp $(PARSER)/parser.tab.hpp: $(PARSER)/parser.y
