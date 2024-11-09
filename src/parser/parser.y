@@ -431,7 +431,7 @@ exercise:
     
 
 set_details:
-    set_details_without_fail { $$ = $1 };
+    set_details_without_fail { $$ = $1; };
     
     | set_details_without_fail FAIL {
 
@@ -467,7 +467,7 @@ set_detail:
         $$ = new SetDetail(std::stoi($2.str), *$5, "set"+ *new std::string($2.str), $1.line, combinedFields); }
 
 
-    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), $1.line) }
+    | SET INTEGER_LITERAL { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(),  "set"+ *new std::string($2.str), $1.line); }
 
     // custom fields
     | SET INTEGER_LITERAL custom_fields { 
@@ -481,7 +481,7 @@ set_detail:
     }
 
     
-    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), $1.line) }
+    | SET INTEGER_LITERAL '{' '}' { $$ = new SetDetail(std::stoi($2.str), *new std::vector<RepDetail*>(), "set"+ *new std::string($2.str), $1.line); }
 
     // custom_fields
     | SET INTEGER_LITERAL custom_fields '{' '}' { 
