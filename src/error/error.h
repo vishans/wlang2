@@ -2,6 +2,7 @@
 #define ERROR_H
 
 #include <iostream>
+#include <vector>
 #include <string>
 
 void printErrorMessage(int lineNumber, std::string errorType, std::string errorMessage, int column=0, int length=0);
