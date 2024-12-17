@@ -3,6 +3,7 @@
 #include "../parser/parser.tab.hpp"
 #include <string>
 #include <iostream>
+#include <cstdlib>
 
 // Externally defined in parser.tab.h
 //extern int yylval;
@@ -185,7 +186,24 @@ int column = 1;
     return STRING; 
 }
 
-[0-9]+ { 
+[1-9][0-9]*-[0-9]+ { 
+    char *duplicate = strdup(yytext);
+    std::string range(duplicate);
+    free(duplicate);
+
+    size_t dashPos = range.find('-');
+
+    std::string startDigits = range.substr(0,dashPos);
+    std::string endDigits = range.substr(dashPos + 1);
+
+    yylval.range.start = std::stoi(startDigits);
+    yylval.range.end = std::stoi(endDigits);
+
+    column += yyleng;
+    return RANGE; 
+}
+
+-?[0-9]+ { 
     yylval.token_info.str = strdup(yytext); 
     yylval.token_info.line = line_number; 
     yylval.token_info.column = column;
@@ -193,7 +211,7 @@ int column = 1;
     return INTEGER_LITERAL; 
 }
 
-[0-9]*(\.[0-9]+)? { 
+-[0-9]*(\.[0-9]+)? { 
     yylval.token_info.str = strdup(yytext); 
     yylval.token_info.line = line_number; 
     yylval.token_info.column = column;
@@ -223,14 +241,6 @@ int column = 1;
     yylval.token_info.column = column;
     column += yyleng;
     return '}'; 
-}
-
-"-" { 
-    yylval.token_info.str = nullptr; 
-    yylval.token_info.line = line_number; 
-    yylval.token_info.column = column;
-    column += yyleng;
-    return '-'; 
 }
 
 [ \t]+ { 

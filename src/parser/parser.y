@@ -64,6 +64,11 @@ extern char *yytext;
         int column;
     } token_info;
 
+    struct {
+        int start;
+        int end;
+    } range;
+
 }
 
 // Token declarations
@@ -74,7 +79,8 @@ extern char *yytext;
 %token <token_info> BOOLEAN_LITERAL
 %token <token_info> TIME_LITERAL
 %token <token_info> WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS FAIL CONST
-%token <token_info> STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE
+%token <token_info> STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE 
+%token <range> RANGE
 
 %type <exercise> exercise
 %type <workout> workout
@@ -625,27 +631,27 @@ rep_detail:
     ;
 
 rep_range:
-    REPS INTEGER_LITERAL '-' INTEGER_LITERAL {
+    REPS RANGE {
         $$ = new std::vector<RepDetail*>();
-        for (int i = std::stoi($2.str); i <= std::stoi($4.str); ++i) {
+        for (int i = $2.start; i <= $2.end; ++i) {
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 *new std::map<std::string, std::pair<std::string,std::string> >(), // Empty custom fields
-                "reps" + std::string($2.str) + "-" + std::string($4.str),
+                "reps" + std::to_string($2.start) + "-" + std::to_string($2.end),
                 $1.line
                 
             ));
         }
     }
-    | REPS INTEGER_LITERAL '-' INTEGER_LITERAL custom_fields {
+    | REPS RANGE custom_fields {
         $$ = new std::vector<RepDetail*>();
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
-        combinedFields.insert($5->begin(), $5->end());
-        for (int i = std::stoi($2.str); i <= std::stoi($4.str); ++i) {
+        combinedFields.insert($3->begin(), $3->end());
+        for (int i = $2.start; i <= $2.end; ++i) {
             $$->push_back(new RepDetail(
                 i, // Rep number in the range
                 combinedFields, // Custom fields
-                "reps" + std::string($2.str) + "-" + std::string($4.str),
+                "reps" + std::to_string($2.start) + "-" + std::to_string($2.end),
                 $1.line
 
             ));
