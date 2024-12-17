@@ -211,7 +211,7 @@ int column = 1;
     return INTEGER_LITERAL; 
 }
 
--[0-9]*(\.[0-9]+)? { 
+-?[0-9]*(\.[0-9]+)? { 
     yylval.token_info.str = strdup(yytext); 
     yylval.token_info.line = line_number; 
     yylval.token_info.column = column;
