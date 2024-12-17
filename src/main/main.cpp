@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
                 if(!constNameToValue.empty()){
                     std::cout << std::endl << "Constants: " << std::endl;
                     for(const auto &pair : constNameToValue){
-                        std::cout << "    "  << pair.first <<  ": [" << pair.second << ", " << nameToTypeMap[pair.first] << " ]"<< std::endl;
+                        std::cout << "    "  << pair.first <<  ": [ " << pair.second << ", " << nameToTypeMap[pair.first] << " ]"<< std::endl;
                     }
                 }
 
