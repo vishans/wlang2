@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include "./ast.h"
 #include "../globals/globals.h" // To be able to access nameToTypeMap for type checking
 #include <cstdlib> // For exit()
@@ -83,8 +85,31 @@ RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, s
 
             }
         }
+
+        auto actualValue = fields.at(field);
+
+        if(nameToTypeMap.at(actualField) == "float"){
+            float num = std::stof(fields.at(field).first);
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(3) << num;
+
+            actualValue.first = oss.str();
+            actualValue.second = "float";
+
+        }
+
+        if(nameToTypeMap.at(actualField) == "integer"){
+            int num = std::stoi(fields.at(field).first);
+
+            std::ostringstream oss;
+            oss << num;
+
+            actualValue.first = oss.str();
+
+        }
         
-        customFields[actualField] = fields.at(field);
+        customFields[actualField] = actualValue;
         
     }
 }
@@ -175,7 +200,30 @@ int lineNumber,
             }
         }
         
-        customFields[actualField] = fields.at(field);
+        auto actualValue = fields.at(field);
+        
+        if(nameToTypeMap.at(actualField) == "float"){
+            float num = std::stof(fields.at(field).first);
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(3) << num;
+
+            actualValue.first = oss.str();
+            actualValue.second = "float";
+
+        }
+
+        if(nameToTypeMap.at(actualField) == "integer"){
+            int num = std::stoi(fields.at(field).first);
+
+            std::ostringstream oss;
+            oss << num;
+
+            actualValue.first = oss.str();
+
+        }
+        
+        customFields[actualField] = actualValue;
         
     }
 
@@ -510,7 +558,30 @@ std::string lineId, int lineNumber)
             }
         }
         
-        customFields[actualField] = fields.at(field);
+        auto actualValue = fields.at(field);
+        
+        if(nameToTypeMap.at(actualField) == "float"){
+            float num = std::stof(fields.at(field).first);
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(3) << num;
+
+            actualValue.first = oss.str();
+            actualValue.second = "float";
+
+        }
+
+        if(nameToTypeMap.at(actualField) == "integer"){
+            int num = std::stoi(fields.at(field).first);
+
+            std::ostringstream oss;
+            oss << num;
+
+            actualValue.first = oss.str();
+
+        }
+        
+        customFields[actualField] = actualValue;
         
     }
 }

@@ -3,6 +3,8 @@
 
 %{
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <vector>
 #include <map>
 #include <string>
@@ -237,10 +239,31 @@ field_def:
 
         }
 
+        std::string actualValue = $3->value;
+        
+        if($3->type == "float"){
+            float num = std::stof($3->value);
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(3) << num;
+
+            actualValue = oss.str();
+
+        }
+
+        if($3->type == "integer"){
+            int num = std::stoi($3->value);
+
+            std::ostringstream oss;
+            oss << num;
+
+            actualValue = oss.str();
+
+        }
 
 
 
-        constNameToValue[$2.str] = $3->value;
+        constNameToValue[$2.str] = actualValue;
         nameToTypeMap[$2.str] = $3->type;
     }
 
