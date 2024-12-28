@@ -623,12 +623,17 @@ Workout::~Workout() {
 
 void Workout::evaluate(){
 
+    std::map<std::string, std::pair<std::string, std::string> > tempFields;
+    for(auto [field, value]: nameToDefaultMap){
+        tempFields[field] = std::make_pair(value, nameToTypeMap[field]);
+    }
+
     for(Exercise* exercise: exerciseList->exercises){
 
         for(auto& [field, valueType]: exercise->customFields){
 
-            // auto& tempValueType = tempSetFields[field];
-            // auto& [tempValue, tempType] = tempValueType; 
+            auto& tempValueType = tempFields[field];
+            auto& [tempValue, tempType] = tempValueType; 
 
             std::string initialValue = nameToDefaultMap[field];
             auto& [value, type] = valueType;
@@ -640,12 +645,18 @@ void Workout::evaluate(){
                 op = value[0];
                 rest = value.substr(1);
 
+                bool persistent = false;
                 if(op[0] == rest[0]){
                     rest = rest.substr(1);
+                    persistent = true;
                 }
 
                 std::string expression_string; 
-                expression_string = initialValue + op + rest; 
+                if(persistent){
+                    expression_string = tempValue + op + rest; 
+                }else{
+                    expression_string = initialValue + op + rest; 
+                }
                 
                 typedef exprtk::expression<double> expression_t;
                 typedef exprtk::parser<double> parser_t;
@@ -693,10 +704,12 @@ void Workout::evaluate(){
                 }
             }
 
+            tempValue = valueType.first;
         }
 
     }
 }
+
 // Function to print the workout details
 void Workout::printWorkout(){
     this->evaluate();
