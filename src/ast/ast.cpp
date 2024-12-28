@@ -9,109 +9,15 @@
 #include <algorithm>
 #include <map>
 #include <regex>
-
+#include "../exprtk/exprtk.hpp"
 
 using namespace std;
 extern int line_number;
-
+std::string operators = "-+*/";
 // Implementation of RepDetail class
 RepDetail::RepDetail(int rn, const map<string, pair<string, string> >& fields, std::string lineId, int lineNumber)
-    : repNumber(rn), lineId(lineId), lineNumber(lineNumber) {
-    // Populate customFields with the relevant fields and values
-    string actualField;
-    for (const auto& [field, valueType] : fields) {
-        const auto& [value, type] = valueType;
-        actualField = field;
-
-        // Field could be an alias
-        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
-            actualField = aliasToNameMap.at(field);
-        }else{
-            // Field does not exist i.e has not been defined
-            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
-                std::string errorMessage = "The field '" + field + "' has not been defined.";
-
-                std::string line = getLine(fp, lineNumber);
-
-                std::string pattern_str = "\\b" + field + "\\b";
-                std::regex pattern(pattern_str);
-
-                std::smatch match;
-                std::regex_search(line, match, pattern);
-
-                printErrorMessage(lineNumber, "Undefined Field", errorMessage, match.position()+1, field.length() );
-
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        if(constNameToValue.find(field) != constNameToValue.end()){
-            // Field is actually a constant
-            
-            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
-
-            std::string line = getLine(fp, lineNumber);
-
-            
-            std::string pattern_str = "\\b" + field + "\\b";
-            std::regex pattern(pattern_str);
-
-            
-            std::smatch match;
-            std::regex_search(line, match, pattern);
-            
-            printErrorMessage(lineNumber, "Constant Violation", errorMessage, match.position()+1, field.length() );
-
-            exit(EXIT_FAILURE);
-        }
-
-        // Type check
-        if(type != nameToTypeMap.at(actualField)){
-            // Type error
-
-            if(!(type == "integer" && nameToTypeMap.at(actualField) == "float")){
-
-                std::string errorMessage = "The field '" + field + "' has the wrong type."
-                + "\n"
-                + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
-                ;
-
-                std::cout << "in here " << std::endl;
-                
-                int correctLineNo = line_number;
-                printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
-
-                exit(EXIT_FAILURE);
-
-            }
-        }
-
-        auto actualValue = fields.at(field);
-
-        if(nameToTypeMap.at(actualField) == "float"){
-            float num = std::stof(fields.at(field).first);
-
-            std::ostringstream oss;
-            oss << std::fixed << std::setprecision(3) << num;
-
-            actualValue.first = oss.str();
-            actualValue.second = "float";
-
-        }
-
-        if(nameToTypeMap.at(actualField) == "integer"){
-            int num = std::stoi(fields.at(field).first);
-
-            std::ostringstream oss;
-            oss << num;
-
-            actualValue.first = oss.str();
-
-        }
-        
-        customFields[actualField] = actualValue;
-        
-    }
+    : repNumber(rn), lineId(lineId), lineNumber(lineNumber) , customFields(fields){
+   
 }
 
 void RepDetail::inherit(const std::map<std::string, std::pair<std::string, std::string> > setFields){
@@ -132,102 +38,10 @@ SetDetail::SetDetail(int sn, vector<RepDetail*> rd,
 std::string lineId,
 int lineNumber,
  std::map<std::string, std::pair<std::string, std::string> >fields
-) : setNumber(sn), repDetails(rd), lineId(lineId), lineNumber(lineNumber){
+) : setNumber(sn), repDetails(rd), lineId(lineId), lineNumber(lineNumber), customFields(fields){
 
-    string actualField;
-    for (const auto& [field, valueType] : fields) {
-        const auto& [value, type] = valueType;
-        actualField = field;
-
-        // Field could be an alias
-        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
-            actualField = aliasToNameMap.at(field);
-        }else{
-            // Field does not exist i.e has not been defined
-            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
-                std::string errorMessage = "The field '" + field + "' has not been defined.";
-
-                std::string line = getLine(fp, lineNumber);
-
-                std::string pattern_str = "\\b" + field + "\\b";
-                std::regex pattern(pattern_str);
-
-                std::smatch match;
-                std::regex_search(line, match, pattern);
-
-                printErrorMessage(lineNumber, "Undefined Field", errorMessage, match.position()+1, field.length() );
-
-                exit(EXIT_FAILURE);
-            }
-        }
-
-         if(constNameToValue.find(field) != constNameToValue.end()){
-            // Field is actually a constant
-             std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
-
-            std::string line = getLine(fp, lineNumber);
-
-            
-            std::string pattern_str = "\\b" + field + "\\b";
-            std::regex pattern(pattern_str);
-
-            
-            std::smatch match;
-            std::regex_search(line, match, pattern);
-            
-            printErrorMessage(lineNumber, "Constant Violation", errorMessage, match.position()+1, field.length() );
-
-            exit(EXIT_FAILURE);
-        }
-
-        // Type check
-        if(type != nameToTypeMap.at(actualField)){
-            // Type error
-
-            if(!(type == "integer" && nameToTypeMap.at(actualField) == "float")){
-
-
-            std::string errorMessage = "The field '" + field + "' has the wrong type."
-            + "\n"
-            + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
-            ;
-           
-            int correctLineNo = line_number;
-            printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
-
-            exit(EXIT_FAILURE);
-
-            }
-        }
-        
-        auto actualValue = fields.at(field);
-        
-        if(nameToTypeMap.at(actualField) == "float"){
-            float num = std::stof(fields.at(field).first);
-
-            std::ostringstream oss;
-            oss << std::fixed << std::setprecision(3) << num;
-
-            actualValue.first = oss.str();
-            actualValue.second = "float";
-
-        }
-
-        if(nameToTypeMap.at(actualField) == "integer"){
-            int num = std::stoi(fields.at(field).first);
-
-            std::ostringstream oss;
-            oss << num;
-
-            actualValue.first = oss.str();
-
-        }
-        
-        customFields[actualField] = actualValue;
-        
-    }
-
-
+    
+    
 
 }
 
@@ -476,6 +290,91 @@ void SetDetail::inherit(const std::map<std::string, std::pair<std::string, std::
     // std::cout << std::endl << std::endl;
 }
 
+void SetDetail::evaluate(){
+
+    auto tempSetFields = customFields;
+
+    for(RepDetail* rep: repDetails){
+        
+        if(rep->repNumber < 0){
+            continue;
+        }
+
+        for(auto& [field, valueType]: rep->customFields){
+
+            auto& tempValueType = tempSetFields[field];
+            auto& [tempValue, tempType] = tempValueType; 
+
+            auto& [value, type] = valueType;
+
+            std::string op;
+            std::string rest;
+
+            if (type == "expression"){
+                op = value[0];
+                rest = value.substr(1);
+
+                if(op[0] == rest[0]){
+                    rest = rest.substr(1);
+                }
+
+                std::string expression_string =  tempValue + op + rest; 
+                
+                typedef exprtk::expression<double> expression_t;
+                typedef exprtk::parser<double> parser_t;
+
+
+                expression_t expression;
+                parser_t parser;
+
+                if (parser.compile(expression_string, expression)) {
+                    double expressionValue = expression.value(); 
+
+                  
+                    if(nameToTypeMap[field] == "float"){
+                        float num = static_cast<float>(expressionValue);
+
+                        std::ostringstream oss;
+                        oss << std::fixed << std::setprecision(3) << num;
+
+                        value = oss.str();
+                        type = "float";
+
+                    }
+
+                    if( nameToTypeMap[field] == "integer"){
+                        int num = static_cast<int>(expressionValue);
+
+                        std::ostringstream oss;
+                        oss << num;
+
+                        value = oss.str();
+                        type = "integer";
+
+                    }
+
+                }
+                else {
+                    
+                    std::string errorMsg = parser.error();
+                    size_t pos = errorMsg.find('-');
+                    printErrorMessage(0, "Invalid Expression", errorMsg.substr(pos + 2), 0, 0);
+                    // TODO: Add correct position and line number after scheduled change to
+                    // switch from std::map<std::string, std::pair<std::string, std::string> >
+                    // to a struct with fields name, value, type, line, column
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+        
+            tempValue = value;
+            
+
+        }
+    }
+
+   
+}
 // Destructor to clean up dynamically allocated RepDetail objects
 SetDetail::~SetDetail() {
     for (auto rep : repDetails) {
@@ -489,101 +388,9 @@ vector<SetDetail*> sd,
 const map<string, pair<string, string> >& fields,
 std::string lineId, int lineNumber)
 
-    : name(n), sets(s), reps(r), setDetails(sd), lineNumber(lineNumber), lineId(lineId)
+    : name(n), sets(s), reps(r), setDetails(sd), lineNumber(lineNumber), lineId(lineId), customFields(fields)
     {
-        // Populate customFields with the relevant fields and values
-    string actualField;
-    for (const auto& [field, valueType] : fields) {
-        const auto& [value, type] = valueType;
-        actualField = field;
 
-        // Field could be an alias
-        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
-            actualField = aliasToNameMap.at(field);
-        }else{
-            // Field does not exist i.e has not been defined
-            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
-                std::string errorMessage = "The field '" + field + "' has not been defined.";
-
-                std::string line = getLine(fp, lineNumber);
-
-                std::string pattern_str = "\\b" + field + "\\b";
-                std::regex pattern(pattern_str);
-
-                std::smatch match;
-                std::regex_search(line, match, pattern);
-
-                printErrorMessage(lineNumber, "Undefined Field", errorMessage, match.position()+1, field.length() );
-
-                exit(EXIT_FAILURE);
-            }
-        }
-
-         if(constNameToValue.find(field) != constNameToValue.end()){
-            // Field is actually a constant
-             std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
-
-            std::string line = getLine(fp, lineNumber);
-
-            
-            std::string pattern_str = "\\b" + field + "\\b";
-            std::regex pattern(pattern_str);
-
-            
-            std::smatch match;
-            std::regex_search(line, match, pattern);
-            
-            printErrorMessage(lineNumber, "Constant Violation", errorMessage, match.position()+1, field.length() );
-
-            exit(EXIT_FAILURE);
-        }
-
-        // Type check
-        if(type != nameToTypeMap.at(actualField)){
-            // Type error
-
-            if(!(type == "integer" && nameToTypeMap.at(actualField) == "float")){
-
-
-            std::string errorMessage = "The field '" + field + "' has the wrong type."
-            + "\n"
-            + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
-            ;
-           
-            int correctLineNo = line_number;
-            printErrorMessage(correctLineNo, "Wrong Type", errorMessage);
-
-            exit(EXIT_FAILURE);
-
-            }
-        }
-        
-        auto actualValue = fields.at(field);
-        
-        if(nameToTypeMap.at(actualField) == "float"){
-            float num = std::stof(fields.at(field).first);
-
-            std::ostringstream oss;
-            oss << std::fixed << std::setprecision(3) << num;
-
-            actualValue.first = oss.str();
-            actualValue.second = "float";
-
-        }
-
-        if(nameToTypeMap.at(actualField) == "integer"){
-            int num = std::stoi(fields.at(field).first);
-
-            std::ostringstream oss;
-            oss << num;
-
-            actualValue.first = oss.str();
-
-        }
-        
-        customFields[actualField] = actualValue;
-        
-    }
 }
 
 // Destructor to clean up dynamically allocated SetDetail objects
@@ -700,6 +507,98 @@ void Exercise::expand(){
 
 }
 
+void Exercise::evaluate(){
+
+    auto tempSetFields = customFields;
+
+    for(SetDetail* set: setDetails){
+
+        if(set->setNumber < 0){
+            continue;
+        }
+
+        for(auto& [field, valueType]: set->customFields){
+
+            auto& tempValueType = tempSetFields[field];
+            auto& [tempValue, tempType] = tempValueType; 
+
+            auto& [value, type] = valueType;
+
+            std::string op;
+            std::string rest;
+
+            if (type == "expression"){
+                op = value[0];
+                rest = value.substr(1);
+
+                bool persistent = false;
+                if(op[0] == rest[0]){
+                    rest = rest.substr(1);
+                    persistent = true;
+                }
+
+                std::string expression_string; 
+                if(persistent){
+                    expression_string = tempValue + op + rest; 
+                }else{
+                    expression_string = this->customFields[field].first + op + rest;
+                }
+                
+                typedef exprtk::expression<double> expression_t;
+                typedef exprtk::parser<double> parser_t;
+
+
+                expression_t expression;
+                parser_t parser;
+
+                if (parser.compile(expression_string, expression)) {
+                    double expressionValue = expression.value(); 
+
+                  
+                    if(nameToTypeMap[field] == "float"){
+                        float num = static_cast<float>(expressionValue);
+
+                        std::ostringstream oss;
+                        oss << std::fixed << std::setprecision(3) << num;
+
+                        value = oss.str();
+                        type = "float";
+
+                    }
+
+                    if( nameToTypeMap[field] == "integer"){
+                        int num = static_cast<int>(expressionValue);
+
+                        std::ostringstream oss;
+                        oss << num;
+
+                        value = oss.str();
+                        type = "integer";
+
+                    }
+
+                }
+                else {
+                    
+                    std::string errorMsg = parser.error();
+                    size_t pos = errorMsg.find('-');
+                    printErrorMessage(0, "Invalid Expression", errorMsg.substr(pos + 2), 0, 0);
+                    // TODO: Add correct position and line number after scheduled change to
+                    // switch from std::map<std::string, std::pair<std::string, std::string> >
+                    // to a struct with fields name, value, type, line, column
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+        
+            tempValue = value;
+
+            
+
+        }
+
+    }
+}
 // Implementation of ExerciseList class
 void ExerciseList::addExercise(Exercise* e) {
     exercises.push_back(e);
@@ -722,8 +621,86 @@ Workout::~Workout() {
     delete exerciseList;
 }
 
+void Workout::evaluate(){
+
+    for(Exercise* exercise: exerciseList->exercises){
+
+        for(auto& [field, valueType]: exercise->customFields){
+
+            // auto& tempValueType = tempSetFields[field];
+            // auto& [tempValue, tempType] = tempValueType; 
+
+            std::string initialValue = nameToDefaultMap[field];
+            auto& [value, type] = valueType;
+
+            std::string op;
+            std::string rest;
+
+            if (type == "expression"){
+                op = value[0];
+                rest = value.substr(1);
+
+                if(op[0] == rest[0]){
+                    rest = rest.substr(1);
+                }
+
+                std::string expression_string; 
+                expression_string = initialValue + op + rest; 
+                
+                typedef exprtk::expression<double> expression_t;
+                typedef exprtk::parser<double> parser_t;
+
+
+                expression_t expression;
+                parser_t parser;
+
+                if (parser.compile(expression_string, expression)) {
+                    double expressionValue = expression.value(); 
+
+                  
+                    if(nameToTypeMap[field] == "float"){
+                        float num = static_cast<float>(expressionValue);
+
+                        std::ostringstream oss;
+                        oss << std::fixed << std::setprecision(3) << num;
+
+                        value = oss.str();
+                        type = "float";
+
+                    }
+
+                    if( nameToTypeMap[field] == "integer"){
+                        int num = static_cast<int>(expressionValue);
+
+                        std::ostringstream oss;
+                        oss << num;
+
+                        value = oss.str();
+                        type = "integer";
+
+                    }
+
+                }
+                else {
+                    
+                    std::string errorMsg = parser.error();
+                    size_t pos = errorMsg.find('-');
+                    printErrorMessage(0, "Invalid Expression", errorMsg.substr(pos + 2), 0, 0);
+                    // TODO: Add correct position and line number after scheduled change to
+                    // switch from std::map<std::string, std::pair<std::string, std::string> >
+                    // to a struct with fields name, value, type, line, column
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+        }
+
+    }
+}
 // Function to print the workout details
-void Workout::printWorkout() const {
+void Workout::printWorkout(){
+    this->evaluate();
+
     for (Exercise* exercise : exerciseList->exercises) {
 
         if(exercise->sets == -1){
@@ -750,6 +727,7 @@ void Workout::printWorkout() const {
         exercise->inheritGlobalFields();
         exercise->passDownRepNumberToSets();
         exercise->passDownFieldsToSets();
+        exercise->evaluate();
 
         // Print details of each set
         for (SetDetail* setDetail : exercise->setDetails) {
@@ -768,6 +746,7 @@ void Workout::printWorkout() const {
            
             setDetail->tally();
             setDetail->passDownFieldsToReps();
+            setDetail->evaluate();
             setDetail->expand2();
            
             for (RepDetail* repDetail : setDetail->repDetails) 

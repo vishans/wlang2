@@ -9,6 +9,8 @@
 #include <map>
 #include <string>
 #include <cstring>
+#include <cmath>
+#include "../exprtk/exprtk.hpp"
 #include "../ast/ast.h"
 #include "parser.tab.hpp"
 #include "../globals/globals.h"
@@ -40,6 +42,7 @@ void initializeMaps() {
 extern int yylineno;
 extern char *yytext;
 
+const std::string operators = "+-*/";
 
 %}
 
@@ -82,6 +85,7 @@ extern char *yytext;
 %token <token_info> TIME_LITERAL
 %token <token_info> WORKOUT EXERCISE SETS REPS SET REP REST FIELD DEFAULT TYPE AS FAIL CONST
 %token <token_info> STRING_TYPE INTEGER_TYPE FLOAT_TYPE TIME_TYPE BOOLEAN_TYPE 
+%token <token_info> EXPRESSION
 %token <range> RANGE
 
 %type <exercise> exercise
@@ -157,7 +161,15 @@ field_def:
 
         if(*$4 != $6->type){
 
-            if(!(*$4 == "float" && $6->type == "integer")){
+            bool flag =  
+
+                (!(*$4 == "float" && $6->type == "integer")) ||
+                
+                (!(*$4 == "float" && $6->type == "expression")) ||
+                
+                (!(*$4 == "float" && $6->type == "expression"));
+            
+            if(!flag) {
 
                 std::string message = "The field '" + std::string($2.str) + "' was given the wrong type." +
                 "\n" + 
@@ -166,10 +178,66 @@ field_def:
                 int correctLineNo = $1.line;
                 printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column, $6->value.length());
                 exit(EXIT_FAILURE);
+        
             }
-
         }
-        nameToDefaultMap[$2.str] = $6->value;
+
+
+        std::string value = $6->value;
+
+        // To evaluate expression if it is an expression (if possible) 
+        // then save that value in the hashmap
+        if($6->type == "expression"){
+            // Abort if it needs a previous value e.g +20
+            if(operators.find(($6->value)[0]) != std::string::npos){
+                printErrorMessage($6->line, "Inappropriate Expression", "This expression cannot be used during initialization.", $6->column,($6->value).length());
+                
+                exit(EXIT_FAILURE);
+            }
+            
+            typedef exprtk::expression<double> expression_t;
+            typedef exprtk::parser<double> parser_t;
+
+            std::string expression_string = $6->value;
+            expression_t expression;
+            parser_t parser;
+
+            if (parser.compile(expression_string, expression)) {
+                value = std::to_string(expression.value()); 
+
+
+                if(*$4 == "float"){
+                    float num = std::stof(value);
+
+                    std::ostringstream oss;
+                    oss << std::fixed << std::setprecision(3) << num;
+
+                    value = oss.str();
+
+                }
+
+                if(*$4 == "integer"){
+                    int num = std::stoi(value);
+
+                    std::ostringstream oss;
+                    oss << num;
+
+                    value = oss.str();
+
+                }
+
+                    
+            }
+            else {
+                
+                std::string errorMsg = parser.error();
+                size_t pos = errorMsg.find('-');
+                printErrorMessage($6->line, "Invalid Expression",errorMsg.substr(pos+2), $6->column,($6->value).length());
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        nameToDefaultMap[$2.str] = value;
     }
     | FIELD IDENTIFIER TYPE field_type DEFAULT field_value { 
 
@@ -200,24 +268,85 @@ field_def:
 
         if(*$4 != $6->type){
 
-            if(!(*$4 == "float" && $6->type == "integer")){
+            bool flag =  
+
+                (!(*$4 == "float" && $6->type == "integer")) ||
+                
+                
+                (!(*$4 == "float" && $6->type == "expression")) ||
+                
+                (!(*$4 == "float" && $6->type == "expression"));
+            
+            if(!flag) {
 
                 std::string message = "The field '" + std::string($2.str) + "' was given the wrong type." +
                 "\n" + 
                 " Expected " + *$4 + " but got " + $6->value + " (" + $6->type + ").";
 
                 int correctLineNo = $1.line;
-                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column, strlen($2.str));
+                printErrorMessage(correctLineNo, "Type Mismatch", message, $6->column, $6->value.length());
                 exit(EXIT_FAILURE);
+        
+            }
+        }
+        
+        std::string value = $6->value;
 
+        // To evaluate expression if it is an expression (if possible) 
+        // then save that value in the hashmap
+        if($6->type == "expression"){
+            // Abort if it needs a previous value e.g +20
+            if(operators.find(($6->value)[0]) != std::string::npos){
+                printErrorMessage($6->line, "Inappropriate Expression", "This expression cannot be used during initialization.", $6->column,($6->value).length());
+                
+                exit(EXIT_FAILURE);
             }
 
+            typedef exprtk::expression<double> expression_t;
+            typedef exprtk::parser<double> parser_t;
+
+            std::string expression_string = $6->value;
+            expression_t expression;
+            parser_t parser;
+
+            if (parser.compile(expression_string, expression)) {
+                double expressionValue = expression.value(); 
+
+
+                if(*$4 == "float"){
+                    float num = static_cast<float>(expressionValue);
+
+                    std::ostringstream oss;
+                    oss << std::fixed << std::setprecision(3) << num;
+
+                    value = oss.str();
+
+                }
+
+                if(*$4 == "integer"){
+                    int num = static_cast<int>(expressionValue);
+
+                    std::ostringstream oss;
+                    oss << num;
+
+                    value = oss.str();
+
+                }
+
+                    
+            }
+            else {
+                
+                std::string errorMsg = parser.error();
+                size_t pos = errorMsg.find('-');
+                printErrorMessage($6->line, "Invalid Expression",errorMsg.substr(pos+2), $6->column,($6->value).length());
+                exit(EXIT_FAILURE);
+            }
         }
 
-        nameToDefaultMap[$2.str] = $6->value;
+        nameToDefaultMap[$2.str] = value;
     }
     | CONST IDENTIFIER field_value {
-
         if(*new std::string($2.str) == "REST"){
             // REST is a reserved word
             int correctLineNo = $1.line;
@@ -239,15 +368,17 @@ field_def:
 
         }
 
-        std::string actualValue = $3->value;
         
+        std::string value = $3->value;
+        std::string type = $3->type;
+
         if($3->type == "float"){
             float num = std::stof($3->value);
 
             std::ostringstream oss;
             oss << std::fixed << std::setprecision(3) << num;
 
-            actualValue = oss.str();
+            value = oss.str();
 
         }
 
@@ -257,14 +388,77 @@ field_def:
             std::ostringstream oss;
             oss << num;
 
-            actualValue = oss.str();
+            value = oss.str();
 
         }
 
 
 
-        constNameToValue[$2.str] = actualValue;
-        nameToTypeMap[$2.str] = $3->type;
+        // To evaluate expression if it is an expression (if possible) 
+        // then save that value in the hashmap
+        if($3->type == "expression"){
+            // Abort if it needs a previous value e.g +20
+            if(operators.find(($3->value)[0]) != std::string::npos){
+                printErrorMessage($3->line, "Inappropriate Expression", "This expression cannot be used during initialization.", $3->column,($3->value).length());
+                
+                exit(EXIT_FAILURE);
+            }
+
+            typedef exprtk::expression<double> expression_t;
+            typedef exprtk::parser<double> parser_t;
+
+            std::string expression_string = $3->value;
+            expression_t expression;
+            parser_t parser;
+
+            if (parser.compile(expression_string, expression)) {
+                double expressionValue = expression.value();
+
+                double fracPart = expressionValue - std::floor(expressionValue);
+
+                if(fracPart == 0.0){
+                    type = "integer";
+                }
+                else{
+                    type = "float";
+                }
+            
+
+                if(type == "float"){
+                    float num = static_cast<float>(expressionValue);
+
+                    std::ostringstream oss;
+                    oss << std::fixed << std::setprecision(3) << num;
+
+                    value = oss.str();
+
+                }
+
+                if(type == "integer"){
+                    int num = static_cast<int>(expressionValue);
+
+                    std::ostringstream oss;
+                    oss << num;
+
+                    value = oss.str();
+
+                }
+
+                    
+            }
+            else {
+                
+                std::string errorMsg = parser.error();
+                size_t pos = errorMsg.find('-');
+                printErrorMessage($3->line, "Invalid Expression",errorMsg.substr(pos+2), $3->column,($3->value).length());
+                exit(EXIT_FAILURE);
+            }
+        }
+
+
+        constNameToValue[$2.str] = value;
+        nameToTypeMap[$2.str] = type;
+
     }
 
     ;
@@ -282,6 +476,7 @@ field_value:
     | INTEGER_LITERAL { $$ = new Field($1.str, "integer", $1.line, $1.column); }
     | FLOAT_LITERAL { $$ = new Field($1.str, "float", $1.line, $1.column); }
     | BOOLEAN_LITERAL { $$ = new Field($1.str, "boolean", $1.line, $1.column); }
+    | EXPRESSION { $$ = new Field($1.str, "expression", $1.line, $1.column); }
     | TIME_LITERAL { 
         Time time;
         try {
@@ -670,14 +865,43 @@ rep_range:
         $$ = new std::vector<RepDetail*>();
         std::map<std::string, std::pair<std::string, std::string> > combinedFields;
         combinedFields.insert($3->begin(), $3->end());
+        std::vector<std::string> exprFields;
+        bool consec = false;
+        
+        for ( auto& [field, valuePair] : combinedFields){
+            auto& [value, type] = valuePair;
+             
+            if(type == "expression"){
+                std::string op = value.substr(0,2);
+                std::string rest = value.substr(2);
+                
+                if(op == "++" || op == "--" || op == "**"){
+                    consec = true;
+                    value = op[0] + rest;
+                }
+
+                exprFields.push_back(field);
+            }
+        }
+        
         for (int i = $2.start; i <= $2.end; ++i) {
-            $$->push_back(new RepDetail(
+            auto fields = combinedFields;
+
+            for(std::string f: exprFields){
+                if(i > $2.start && !consec){
+                    fields[f] = std::make_pair("+0", "expression");
+                }
+            }
+            
+            RepDetail* r = new RepDetail(
                 i, // Rep number in the range
-                combinedFields, // Custom fields
+                fields, // Custom fields
                 "reps" + std::to_string($2.start) + "-" + std::to_string($2.end),
                 $1.line
+            );
 
-            ));
+
+            $$->push_back(r);
         }
     }
     ;
@@ -689,33 +913,438 @@ custom_fields:
     ;
 
 field_value_pair:
+    // TODO: Type checking here instead of at runtime
+    // Makes reporting error and error column easier as well
+    // Only deferred expression should happen at run time
+
     IDENTIFIER STRING { 
+        std::string field = $1.str;
+        std::string actualField = $1.str;
+        
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+
+                printErrorMessage($2.line, "Undefined Field", errorMessage, $2.column, field.length() );
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+            
+            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            printErrorMessage($2.line, "Constant Violation", errorMessage, $2.column, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
+
+        // Type check
+        std::string type = "string";
+        std::string value = $2.str;
+        if(type != nameToTypeMap.at(actualField)){
+            // Type error
+
+                std::string errorMessage = "The field '" + field + "' has the wrong type."
+                + "\n"
+                + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+                ;
+
+                
+                // int correctLineNo = line_number;
+                printErrorMessage($2.line, "AWrong Type", errorMessage, $2.column, value.length());
+
+                exit(EXIT_FAILURE);
+
+        }
+
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
-        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("string"))));
+        m->insert(std::make_pair(actualField, std::make_pair($2.str,*new std::string("string"))));
         $$ = m;
     }
-    | IDENTIFIER INTEGER_LITERAL { 
+
+    | IDENTIFIER EXPRESSION { 
+
+        std::string value = $2.str;
+        // Type check required here otherwise itt will fail if identifier does not exist
+        // Gotta check if identifier exists and that it is either of type integer or float
+        std::string field = $1.str;
+        std::string actualField = field;
+
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+
+
+                printErrorMessage($1.line, "Undefined Field", errorMessage, $1.column, field.length() );
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+            
+            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            printErrorMessage($1.line, "Constant Violation", errorMessage, $1.column, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
+
+        std::string type = nameToTypeMap[actualField];
+
+        // Type check
+        // check if integer or float
+
+        if("integer" != type && "float" != type && "expression" != type){
+            // Type error
+
+
+            std::string errorMessage = "The field '" + field + "' has the wrong type."
+            + "\n"
+            + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+            ;
+
+            
+            printErrorMessage($2.line, "XWrong Type", errorMessage, $2.column, value.length());
+
+            exit(EXIT_FAILURE);
+
+        }
+
+        // To evaluate expression if it is an expression (if possible) 
+        // then save that value in the hashmap
+        // Abort if it needs a previous value e.g +20
+        if(operators.find(($2.str)[0]) == std::string::npos){
+            // Ignore if it needs a previous value
+            // Needs to be evaluated at run time
+        
+
+            typedef exprtk::expression<double> expression_t;
+            typedef exprtk::parser<double> parser_t;
+
+            std::string expression_string = $2.str;
+            expression_t expression;
+            parser_t parser;
+
+            if (parser.compile(expression_string, expression)) {
+                double expressionValue = expression.value();
+
+                // double frVacPart = expressionValue - std::floor(expressionValue);
+
+                //if(fracPart == 0.0){
+                //    type = "integer";
+                //}
+                //else{
+                //    type = "float";
+                //}
+            
+
+                if(type == "float"){
+                    float num = static_cast<float>(expressionValue);
+
+                    std::ostringstream oss;
+                    oss << std::fixed << std::setprecision(3) << num;
+
+                    value = oss.str();
+
+                }
+
+                if(type == "integer"){
+                    int num = static_cast<int>(expressionValue);
+
+                    std::ostringstream oss;
+                    oss << num;
+
+                    value = oss.str();
+
+                }
+
+                    
+            }
+            else {
+                
+                std::string errorMsg = parser.error();
+                size_t pos = errorMsg.find('-');
+                printErrorMessage($2.line, "Invalid Expression",errorMsg.substr(pos+2), $2.column,strlen($2.str));
+                exit(EXIT_FAILURE);
+            }
+        }
+        else{
+            // Defer evaluation at run time as a previous value is needed
+            // i.e +20
+            type = "expression";
+        }
+
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
         
-        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("integer"))));
+        m->insert(std::make_pair(actualField, std::make_pair(value , type)));
+
+        $$ = m;
+    }
+    
+    | IDENTIFIER INTEGER_LITERAL { 
+        std::string field = $1.str;
+        std::string actualField = $1.str;
+        
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+
+                printErrorMessage($2.line, "Undefined Field", errorMessage, $2.column, field.length() );
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+            
+            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            printErrorMessage($2.line, "Constant Violation", errorMessage, $2.column, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
+
+        // Type check
+        std::string type = "integer";
+        std::string value = $2.str;
+        if(type != nameToTypeMap.at(actualField)){
+            if(nameToTypeMap.at(actualField) != "float"){
+                // Type error
+
+                std::string errorMessage = "The field '" + field + "' has the wrong type."
+                + "\n"
+                + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+                ;
+
+                
+                // int correctLineNo = line_number;
+                printErrorMessage($2.line, "AWrong Type", errorMessage, $2.column, value.length());
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        std::string actualValue = $2.str;
+        
+        if(nameToTypeMap.at(actualField) == "float"){
+            float num = std::stof(value);
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(3) << num;
+
+            actualValue = oss.str();
+            type = "float";
+
+        }
+
+        if(nameToTypeMap.at(actualField) == "integer"){
+            int num = std::stoi(value);
+
+            std::ostringstream oss;
+            oss << num;
+
+            actualValue = oss.str();
+
+        }
+
+        std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
+        m->insert(std::make_pair(actualField, std::make_pair(actualValue , type)));
 
         $$ = m;
     }
     | IDENTIFIER FLOAT_LITERAL { 
+        std::string field = $1.str;
+        std::string actualField = $1.str;
+        
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+
+                printErrorMessage($2.line, "Undefined Field", errorMessage, $2.column, field.length() );
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+            
+            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            printErrorMessage($2.line, "Constant Violation", errorMessage, $2.column, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
+
+        // Type check
+        std::string type = "float";
+        std::string value = $2.str;
+        if(type != nameToTypeMap.at(actualField)){
+            // Type error
+
+            if(nameToTypeMap.at(actualField) != "integer"){
+                std::string errorMessage = "The field '" + field + "' has the wrong type."
+                + "\n"
+                + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+                ;
+
+                
+                // int correctLineNo = line_number;
+                printErrorMessage($2.line, "AWrong Type", errorMessage, $2.column, value.length());
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+
+        std::string actualValue = $2.str;
+        
+        if(nameToTypeMap.at(actualField) == "float"){
+            float num = std::stof(value);
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(3) << num;
+
+            actualValue = oss.str();
+
+        }
+
+        if(nameToTypeMap.at(actualField) == "integer"){
+            int num = std::stoi(value);
+
+            std::ostringstream oss;
+            oss << num;
+
+            actualValue = oss.str();
+            type = "integer";
+
+        }
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
 
-        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("float"))));
+        m->insert(std::make_pair(actualField, std::make_pair(actualValue , type)));
 
         $$ = m;
     }
     | IDENTIFIER BOOLEAN_LITERAL { 
+        std::string field = $1.str;
+        std::string actualField = $1.str;
+        
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+
+                printErrorMessage($2.line, "Undefined Field", errorMessage, $2.column, field.length() );
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+            
+            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            printErrorMessage($2.line, "Constant Violation", errorMessage, $2.column, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
+
+        // Type check
+        std::string type = "boolean";
+        std::string value = $2.str;
+        if(type != nameToTypeMap.at(actualField)){
+            // Type error
+
+                std::string errorMessage = "The field '" + field + "' has the wrong type."
+                + "\n"
+                + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+                ;
+
+                
+                // int correctLineNo = line_number;
+                printErrorMessage($2.line, "AWrong Type", errorMessage, $2.column, value.length());
+
+                exit(EXIT_FAILURE);
+
+        }
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
 
-        m->insert(std::make_pair($1.str, std::make_pair($2.str,*new std::string("boolean"))));
+        m->insert(std::make_pair(actualField, std::make_pair($2.str,*new std::string("boolean"))));
 
         $$ = m;
     }
     | IDENTIFIER TIME_LITERAL { 
+        std::string field = $1.str;
+        std::string actualField = $1.str;
+        
+        // Field could be an alias
+        if(aliasToNameMap.find(field) != aliasToNameMap.end()){
+            actualField = aliasToNameMap.at(field);
+        }else{
+            // Field does not exist i.e has not been defined
+            if(nameToTypeMap.find(field) == nameToTypeMap.end()){
+                std::string errorMessage = "The field '" + field + "' has not been defined.";
+
+                printErrorMessage($2.line, "Undefined Field", errorMessage, $2.column, field.length() );
+
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if(constNameToValue.find(field) != constNameToValue.end()){
+            // Field is actually a constant
+            
+            std::string errorMessage = "The field '" + field + "' is a constant. Its value cannot be changed.";
+
+            printErrorMessage($2.line, "Constant Violation", errorMessage, $2.column, field.length() );
+
+            exit(EXIT_FAILURE);
+        }
+
+        // Type check
+        std::string type = "time";
+        std::string value = $2.str;
+        if(type != nameToTypeMap.at(actualField)){
+            // Type error
+
+                std::string errorMessage = "The field '" + field + "' has the wrong type."
+                + "\n"
+                + " Expected " + nameToTypeMap.at(actualField) + " but got " + value + " (" +type + ")."
+                ;
+
+                
+                // int correctLineNo = line_number;
+                printErrorMessage($2.line, "AWrong Type", errorMessage, $2.column, value.length());
+
+                exit(EXIT_FAILURE);
+
+        }
         std::map<std::string, std::pair<std::string, std::string> > *m = new std::map<std::string, std::pair<std::string, std::string> >();
 
      Time time;
@@ -744,7 +1373,7 @@ field_value_pair:
 
         std::string timeString = std::to_string(time.convertIntoSeconds());
 
-        m->insert(std::make_pair($1.str, std::make_pair(timeString,*new std::string("time"))));
+        m->insert(std::make_pair(actualField, std::make_pair(timeString,*new std::string("time"))));
         $$ = m;
     }
     ;

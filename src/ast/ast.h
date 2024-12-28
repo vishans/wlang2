@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 
+
 /**
  * Class representing the details of an individual repetition within a set.
  */
@@ -81,6 +82,8 @@ public:
 
     void setReps(std::vector<RepDetail*> reps);
 
+    void evaluate();
+
     /**
      * Destructor for SetDetail
      */
@@ -130,6 +133,8 @@ public:
     void expand();
 
     int findMaximumSetNumber();
+
+    void evaluate();
 };
 
 /**
@@ -182,9 +187,11 @@ public:
     /**
      * Function to print the workout details
      */
-    void printWorkout() const;
+    void printWorkout();
 
     std::string csv() const;
+    
+    void evaluate();
 };
 
 struct Field {

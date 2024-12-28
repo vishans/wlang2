@@ -203,7 +203,7 @@ int column = 1;
     return RANGE; 
 }
 
--?[0-9]+ { 
+[0-9]+ { 
     yylval.token_info.str = strdup(yytext); 
     yylval.token_info.line = line_number; 
     yylval.token_info.column = column;
@@ -211,13 +211,22 @@ int column = 1;
     return INTEGER_LITERAL; 
 }
 
--?[0-9]*(\.[0-9]+)? { 
+[0-9]*(\.[0-9]+)? { 
     yylval.token_info.str = strdup(yytext); 
     yylval.token_info.line = line_number; 
     yylval.token_info.column = column;
     column += yyleng;
     return FLOAT_LITERAL;
 }
+
+[0-9+\-*/().]+ {
+    yylval.token_info.str = strdup(yytext); 
+    yylval.token_info.line = line_number; 
+    yylval.token_info.column = column;
+    column += yyleng;
+    return EXPRESSION; 
+
+}       
 
 ([0-9]+h)?([0-9]+m)?([0-9]+s)? { 
     yylval.token_info.str = strdup(yytext); 
