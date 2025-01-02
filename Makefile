@@ -106,4 +106,4 @@ clean:
 	rm -f $(OBJ)/*.o $(WIN_OBJ)/*.o w w.exe
 
 run: w
-	./w meg.w -p
+	./w chad.w -p
