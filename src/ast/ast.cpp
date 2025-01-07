@@ -845,6 +845,7 @@ string Workout::csv() const {
         exercise->inheritGlobalFields();
         exercise->passDownRepNumberToSets();
         exercise->passDownFieldsToSets();
+        exercise->evaluate();
 
        
         for (SetDetail* setDetail : exercise->setDetails) {
@@ -878,8 +879,9 @@ string Workout::csv() const {
 
             setDetail->tally();
             setDetail->passDownFieldsToReps();
+            setDetail->evaluate();
             setDetail->expand2();
-           
+
             for (RepDetail* repDetail : setDetail->repDetails)
             {
                 // REST
