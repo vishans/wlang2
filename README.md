@@ -1,5 +1,10 @@
 # The W Language
 
+> [!WARNING]
+> Albeit being fully functional, the column location in case of errors might be inconsistent or contain discrepancies. Line numbers are however accurate.
+> I am aware of this bug. I plan on re-writing part of the compiler and fix it altogether.
+> I plan on doing so during reading week as I am busy with school and work at the moment.
+
 The **W Language**, is a domain-specific language (DSL) designed to define and track workout routines. With the ability to define exercises, sets, reps, and custom fields, W Language aims to be a powerful tool for fitness enthusiasts and developers alike. 
 
 ## Key Features
@@ -52,47 +57,43 @@ The `W` Compiler allows you to compile `.w` files with various options to custom
 Here's a sneak peek at how you can define a workout using W Language:
 
 ```plaintext
+// Sample workout
+// Janauary 15 2025
 
-// W supports both in-line and block comments
+field weight type float default 10 as w
+field resistance_type type string default "dumbbel" as rt 
+field percentage_execution type float default 1 as pe
 
-/*
-Lower Body Workout 
-October 16, 2024
-*/
-
-field weight type float default 0 as w // 'w' is an alias for weight
-field perceived_difficulty type integer default 5 as pd // Scale of 1 to 10 where 5 is like average
-
-const date "16/10/2024" // a const is appended to every row
+const date "15/01/2025" 
 
 workout {
-    exercise "squats" sets 3 reps 10 weight 100 {
-        set 1 {
-            reps 1-5 weight 100
-            rep 6 w 90 // using alias 'w' instead of 'weight'
-            rest 1m
-            reps 7-10 w 69.69
-        }
 
-        rest 2m30s
+	exercise "squats" sets 5 reps 5 rt "barbel" w ++19{ // adds 19 to the previous value of w (which is 10)
+		set 1 {
+			reps 1-5 w +5 // using alias 'w' instead of full 'weight'
+		}
 
-        set 2 {
-            reps 1-8 w 90
-            rep 9 w 90 pd 9 // Found this rep difficult to execute
-            fail
-        }
+		set 2 w 10{
+			rep 1 w 29 
+			rest 1m
+			reps 2-5 w --5 // cumulatively subtracts 5 for each rep because of double -
+		}
+		
+		set 3 w 10 {}
 
-        rest 2m30s
+		set 4 rt "bb" w ++59{
+			reps 3-5 w -5 // only subtracts 5 once and keeps that result because of single -
+		}
 
-        set 3 pd 7{ // Found the third set more challenging 7/10
-            rep 1 w 80
-            reps 2-10 w 69
-        }
+		set 5 {
+			rep 1 rt "body"
+		}
+	}
 
-        rest 3m
-    }
+	exercise "pull ups" sets 3 reps 3 w +20 rt "weight vest" {
+		set 3 w 0
+	}
 }
-
 ```
 
 ## Default CSV Output
@@ -103,40 +104,57 @@ Generated output for the example above:
 
 ```plaintext
 
-REST,date,exercise_id,exercise_name,perceived_difficulty,rep_id,set_id,weight
-,"16/10/2024",1,"squats",5,1,1,100
-,"16/10/2024",1,"squats",5,2,1,100
-,"16/10/2024",1,"squats",5,3,1,100
-,"16/10/2024",1,"squats",5,4,1,100
-,"16/10/2024",1,"squats",5,5,1,100
-,"16/10/2024",1,"squats",5,6,1,90
-60,"16/10/2024",-1,REST,,-1,-1,
-,"16/10/2024",1,"squats",5,7,1,69.69
-,"16/10/2024",1,"squats",5,8,1,69.69
-,"16/10/2024",1,"squats",5,9,1,69.69
-,"16/10/2024",1,"squats",5,10,1,69.69
-150,"16/10/2024",-1,REST,,-1,-1,
-,"16/10/2024",1,"squats",5,1,2,90
-,"16/10/2024",1,"squats",5,2,2,90
-,"16/10/2024",1,"squats",5,3,2,90
-,"16/10/2024",1,"squats",5,4,2,90
-,"16/10/2024",1,"squats",5,5,2,90
-,"16/10/2024",1,"squats",5,6,2,90
-,"16/10/2024",1,"squats",5,7,2,90
-,"16/10/2024",1,"squats",5,8,2,90
-,"16/10/2024",1,"squats",9,9,2,90
-150,"16/10/2024",-1,REST,,-1,-1,
-,"16/10/2024",1,"squats",7,1,3,80
-,"16/10/2024",1,"squats",7,2,3,69
-,"16/10/2024",1,"squats",7,3,3,69
-,"16/10/2024",1,"squats",7,4,3,69
-,"16/10/2024",1,"squats",7,5,3,69
-,"16/10/2024",1,"squats",7,6,3,69
-,"16/10/2024",1,"squats",7,7,3,69
-,"16/10/2024",1,"squats",7,8,3,69
-,"16/10/2024",1,"squats",7,9,3,69
-,"16/10/2024",1,"squats",7,10,3,69
-180,"16/10/2024",-1,REST,,-1,-1,
+Exercise: "squats", Sets: 5, Reps: 5, resistance_type: "barbel",string, weight: 29.000,float
+  Set 1 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 34.000, float ]
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 34.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 34.000, float ]
+    Rep 4, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 34.000, float ]
+    Rep 5, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 34.000, float ]
+  Set 2 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 29.000, float ]
+    REST 60s
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 24.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 19.000, float ]
+    Rep 4, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 14.000, float ]
+    Rep 5, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 9.000, float ]
+  Set 3 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 10.000, float ]
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 10.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 10.000, float ]
+    Rep 4, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 10.000, float ]
+    Rep 5, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 10.000, float ]
+  Set 4 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "bb", string ], weight: [ 69.000, float ]
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "bb", string ], weight: [ 69.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "bb", string ], weight: [ 64.000, float ]
+    Rep 4, percentage_execution: [ 1, float ], resistance_type: [ "bb", string ], weight: [ 64.000, float ]
+    Rep 5, percentage_execution: [ 1, float ], resistance_type: [ "bb", string ], weight: [ 64.000, float ]
+  Set 5 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "body", string ], weight: [ 29.000, float ]
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 29.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 29.000, float ]
+    Rep 4, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 29.000, float ]
+    Rep 5, percentage_execution: [ 1, float ], resistance_type: [ "barbel", string ], weight: [ 29.000, float ]
+
+Exercise: "pull ups", Sets: 3, Reps: 3, resistance_type: "weight vest",string, weight: 30.000,float
+  Set 1 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 30.000, float ]
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 30.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 30.000, float ]
+  Set 2 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 30.000, float ]
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 30.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 30.000, float ]
+  Set 3 
+    Rep 1, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 0.000, float ]
+    Rep 2, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 0.000, float ]
+    Rep 3, percentage_execution: [ 1, float ], resistance_type: [ "weight vest", string ], weight: [ 0.000, float ]
+
+
+Constants: 
+    date: [ "15/01/2025", string ]
+
 
 ```
 
